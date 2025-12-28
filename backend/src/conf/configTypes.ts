@@ -110,6 +110,7 @@ export interface TwitterConfiguration {
 export interface SlackConfiguration {
   clientId: string
   clientSecret: string
+  callbackUrl: string
   globalLimit?: number
   maxRetrospectInSeconds: number
   reporterToken?: string

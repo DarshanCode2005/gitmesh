@@ -2,8 +2,8 @@ import config from '@/config';
 import GitConnect from './components/git-connect.vue';
 
 export default {
-  enabled: config.isGitIntegrationEnabled,
-  hideAsIntegration: !config.isGitIntegrationEnabled,
+  enabled: config.isGitEnabled,
+  hideAsIntegration: !config.isGitEnabled,
   name: 'Git',
   backgroundColor: '#FFFFFF',
   borderColor: '#FFFFFF',

@@ -8,7 +8,7 @@ export function getSlackStrategy(): SlackStrategy {
     {
       clientID: SLACK_CONFIG.clientId,
       clientSecret: SLACK_CONFIG.clientSecret,
-      callbackURL: `${API_CONFIG.url}/slack/callback`,
+      callbackURL: SLACK_CONFIG.callbackUrl,
       authorizationURL: 'https://slack.com/oauth/v2/authorize',
       tokenURL: 'https://slack.com/api/oauth.v2.access',
       skipUserProfile: true,

@@ -56,8 +56,8 @@ const defaultConfig = {
     id: import.meta.env.VUE_APP_SAMPLE_TENANT_ID,
     token: import.meta.env.VUE_APP_SAMPLE_TENANT_TOKEN,
   },
-  isGitEnabled: import.meta.env.VUE_APP_IS_GIT_ENABLED,
-  isGroupsioEnabled: import.meta.env.VUE_APP_IS_GROUPSIO_ENABLED,
+  isGitEnabled: import.meta.env.VUE_APP_IS_GIT_ENABLED !== 'false',
+  isGroupsioEnabled: import.meta.env.VUE_APP_IS_GROUPSIO_ENABLED !== 'false',
   isTwitterEnabled: import.meta.env.VUE_APP_IS_TWITTER_ENABLED,
 };
 

@@ -107,6 +107,7 @@
   "slack": {
     "clientId": "SLACK_CLIENT_ID",
     "clientSecret": "SLACK_CLIENT_SECRET",
+    "callbackUrl": "SLACK_REDIRECT_URL",
     "reporterToken": "SLACK_REPORTER_TOKEN",
     "reporterChannel": "SLACK_REPORTER_CHANNEL",
     "teamId": "SLACK_TEAM_ID",

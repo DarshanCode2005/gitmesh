@@ -2,8 +2,8 @@ import config from '@/config';
 import GroupsioConnect from './components/groupsio-connect.vue';
 
 export default {
-  enabled: config.isGroupsioIntegrationEnabled,
-  hideAsIntegration: !config.isGroupsioIntegrationEnabled,
+  enabled: config.isGroupsioEnabled,
+  hideAsIntegration: !config.isGroupsioEnabled,
   name: 'Groups.io',
   backgroundColor: '#FFFFFF',
   borderColor: '#FFFFFF',
