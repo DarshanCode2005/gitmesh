@@ -1,24 +1,37 @@
 <template>
   <header class="border-b border-white/10 bg-black">
-    <div class="max-w-5xl mx-auto px-6 py-6 flex items-center justify-between">
-      <h1 class="text-white font-mono text-xl font-bold tracking-tight">
-        GitMesh <span class="text-white/40 font-normal">Community Edition</span>
-      </h1>
-      
-      <div class="flex gap-6 items-center">
-        <router-link 
-          to="/auth/signin" 
-          class="text-white font-mono text-sm font-bold hover:underline"
+    <div class="max-w-6xl mx-auto px-6 py-5 flex items-center justify-between">
+      <!-- Brand -->
+      <div>
+        <h1 class="font-mono text-lg font-semibold text-white tracking-tight">
+          GitMesh
+          <span class="ml-2 text-sm font-normal text-white/60">
+            Community Edition
+          </span>
+        </h1>
+        <p class="mt-0.5 text-xs text-white/50">
+          A Linux Foundation Decentralized Trust Lab Project
+        </p>
+      </div>
+
+      <!-- Actions -->
+      <nav class="flex items-center gap-5">
+        <router-link
+          to="/auth/signin"
+          class="font-mono text-sm font-medium text-white/80 hover:text-white transition-colors"
         >
           Sign In
         </router-link>
-        <router-link 
-          to="/auth/signup" 
-          class="bg-zinc-800 text-white px-5 py-2 font-mono text-sm font-bold hover:bg-zinc-700 transition-all"
+
+        <router-link
+          to="/auth/signup"
+          class="font-mono text-sm font-semibold px-4 py-2 rounded-md
+                 bg-orange-500 text-black
+                 hover:bg-orange-400 transition-colors"
         >
           Sign Up
         </router-link>
-      </div>
+      </nav>
     </div>
   </header>
 </template>

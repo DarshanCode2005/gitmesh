@@ -7,11 +7,13 @@
     <PremiumFooter />
   </div>
 
-  <div v-else class="min-h-screen bg-black">
+<div v-else class="min-h-screen bg-black text-white">
     <!-- Community Edition -->
     <CommunityHeader />
+    <CommunityAnnouncement />
     <CommunityHero />
     <CommunityQuickStart />
+    <CommunityAbout />
     <CommunityFooter />
   </div>
 </template>
@@ -24,8 +26,10 @@ import config from '@/config';
 
 // Community Components
 import CommunityHeader from '@/components/landing/CommunityHeader.vue';
+import CommunityAnnouncement from '@/components/landing/CommunityAnnouncement.vue';
 import CommunityHero from '@/components/landing/CommunityHero.vue';
 import CommunityQuickStart from '@/components/landing/CommunityQuickStart.vue';
+import CommunityAbout from '@/components/landing/CommunityAbout.vue';
 import CommunityFooter from '@/components/landing/CommunityFooter.vue';
 
 // Premium Components (Dynamic Import)
@@ -52,7 +56,7 @@ const PremiumFooter = loadPremiumComponent('PremiumFooter.vue');
 const router = useRouter();
 const store = useStore();
 const isPremium = computed(() => !config.isCommunityVersion);
-
+// const isPremium = computed(() => true);
 // Redirect authenticated users to dashboard after store is initialized
 onMounted(async () => {
   try {

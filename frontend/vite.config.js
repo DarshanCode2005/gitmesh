@@ -1,21 +1,22 @@
-import { fileURLToPath, URL } from 'node:url';
+import { fileURLToPath, URL } from "node:url";
+import { defineConfig, splitVendorChunkPlugin } from "vite";
+import vue from "@vitejs/plugin-vue";
 
-import { defineConfig, splitVendorChunkPlugin } from 'vite';
-import vue from '@vitejs/plugin-vue';
+import Components from "unplugin-vue-components/vite";
+import { ElementPlusResolver } from "unplugin-vue-components/resolvers";
+import { visualizer } from "rollup-plugin-visualizer";
 
-import Components from 'unplugin-vue-components/vite';
-import { ElementPlusResolver } from 'unplugin-vue-components/resolvers';
-import { visualizer } from 'rollup-plugin-visualizer';
+import dns from "dns";
 
-import dns from 'dns';
-
-dns.setDefaultResultOrder('verbatim');
+dns.setDefaultResultOrder("verbatim");
 
 export default defineConfig({
   define: {
-    'import.meta.env': process.env,
+    "import.meta.env": process.env,
   },
-  envPrefix: 'VUE_APP',
+
+  envPrefix: "VUE_APP",
+
   build: {
     sourcemap: false,
   },
@@ -23,39 +24,34 @@ export default defineConfig({
     vue(),
     splitVendorChunkPlugin(),
     Components({
-      extensions: ['vue', 'md'],
-      include: [/\.vue$/, /\.vue\?vue/, /\.md$/],
+      extensions: ["vue"],
+      include: [/\.vue$/, /\.vue\?vue/],
       resolvers: [
         ElementPlusResolver({
-          importStyle: 'sass',
+          importStyle: "sass",
         }),
       ],
-      dts: 'components.d.ts',
+      dts: "components.d.ts",
     }),
     visualizer({
-      template: 'treemap',
-      open: true,
+      template: "treemap",
+      open: false,
       gzipSize: true,
       brotliSize: true,
-      filename: 'analyse.html',
+      filename: "analyse.html",
     }),
   ],
   resolve: {
-    extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json', '.vue'],
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url)),
-      '~': fileURLToPath(
-        new URL('./node_modules', import.meta.url),
-      ),
+      "@": fileURLToPath(new URL("./src", import.meta.url)),
+      "~": fileURLToPath(new URL("./node_modules", import.meta.url)),
     },
   },
   server: {
     proxy: {
-      '/api': {
-        target:
-          process.env.BACKEND_URL
-          || 'http://localhost:8080',
-        rewrite: (path) => path.replace(/^\/api/, ''),
+      "/api": {
+        target: process.env.BACKEND_URL || "http://localhost:8080",
+        rewrite: (path) => path.replace(/^\/api/, ""),
       },
     },
     port: 8081,
