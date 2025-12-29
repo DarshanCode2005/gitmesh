@@ -149,6 +149,49 @@ function restore_db_backup() {
     say "All done!"
 }
 
+function clean_orphans_silent() {
+    # Clean orphans from scaffold silently
+    $_DC --compatibility -p $PROJECT_NAME -f $CLI_HOME/scaffold.yaml down --remove-orphans >/dev/null 2>&1 || true
+    
+    # Clean orphans from premium scaffold if it exists
+    if [ -f "$CLI_HOME/premium-scaffold.yaml" ]; then
+        $_DC --compatibility -p $PROJECT_NAME -f $CLI_HOME/premium-scaffold.yaml down --remove-orphans >/dev/null 2>&1 || true
+    fi
+    
+    # Clean orphans from all service files
+    for SERVICE in $CONTAINERS
+    do
+        $_DC --compatibility -p $PROJECT_NAME -f "$CLI_HOME/services/${SERVICE}.yaml" down --remove-orphans >/dev/null 2>&1 || true
+    done
+    
+    # Clean orphans from test environment
+    $_DC -p "$PROJECT_NAME-test" -f $CLI_HOME/../backend/docker-compose.test.yaml down --remove-orphans >/dev/null 2>&1 || true
+}
+
+function clean_orphans() {
+    say "Cleaning up orphan containers..."
+    
+    # Clean orphans from scaffold
+    $_DC --compatibility -p $PROJECT_NAME -f $CLI_HOME/scaffold.yaml down --remove-orphans
+    
+    # Clean orphans from premium scaffold if it exists
+    if [ -f "$CLI_HOME/premium-scaffold.yaml" ]; then
+        $_DC --compatibility -p $PROJECT_NAME -f $CLI_HOME/premium-scaffold.yaml down --remove-orphans
+    fi
+    
+    # Clean orphans from all service files
+    for SERVICE in $CONTAINERS
+    do
+        say "Cleaning orphans for service $SERVICE..."
+        $_DC --compatibility -p $PROJECT_NAME -f "$CLI_HOME/services/${SERVICE}.yaml" down --remove-orphans
+    done
+    
+    # Clean orphans from test environment
+    $_DC -p "$PROJECT_NAME-test" -f $CLI_HOME/../backend/docker-compose.test.yaml down --remove-orphans 2>/dev/null || true
+    
+    yell "Orphan cleanup completed!"
+}
+
 function scaffold() {
     HELP="${RESET}\nUsage:\n ./cli scaffold [ up | down | destroy | reset ]\n"
 
@@ -254,9 +297,10 @@ function start_service() {
     export GROUP_ID=$(id -g)
 
     if [[ ${DEV} ]]; then
-        $_DC --compatibility -p $PROJECT_NAME -f "$CLI_HOME/services/${1}.yaml" up --build -d ${1}-dev
+        # Suppress orphan warnings by redirecting stderr, but keep the containers running
+        $_DC --compatibility -p $PROJECT_NAME -f "$CLI_HOME/services/${1}.yaml" up --build -d ${1}-dev 2> >(grep -v "Found orphan containers" >&2)
     else
-        $_DC --compatibility -p $PROJECT_NAME -f "$CLI_HOME/services/${1}.yaml" up --build -d ${1}
+        $_DC --compatibility -p $PROJECT_NAME -f "$CLI_HOME/services/${1}.yaml" up --build -d ${1} 2> >(grep -v "Found orphan containers" >&2)
     fi
 }
 
@@ -323,8 +367,8 @@ function migrate_local() {
 
 function up_test_scaffold() {
     scaffold_set_up_network "${PROJECT_NAME}-bridge-test" $DOCKET_TEST_NETWORK_SUBNET $DOCKER_TEST_NETWORK_GATEWAY
-    $_DC -p "$PROJECT_NAME-test" -f $CLI_HOME/../backend/docker-compose.test.yaml down
-    $_DC -p "$PROJECT_NAME-test" -f $CLI_HOME/../backend/docker-compose.test.yaml up -d
+    $_DC -p "$PROJECT_NAME-test" -f $CLI_HOME/../backend/docker-compose.test.yaml down --remove-orphans
+    $_DC -p "$PROJECT_NAME-test" -f $CLI_HOME/../backend/docker-compose.test.yaml up -d --remove-orphans
     migrate_test
 }
 
@@ -351,7 +395,7 @@ function source_edition() {
 function check_init_premium() {
     source_edition
     if [ $__EDITION == "gitmesh-ee" ]; then
-        $_DC --compatibility -p $PROJECT_NAME -f $CLI_HOME/premium-scaffold.yaml up -d --build
+        $_DC --compatibility -p $PROJECT_NAME -f $CLI_HOME/premium-scaffold.yaml up -d --build --remove-orphans
         init_unleash
     fi
 }
@@ -367,7 +411,7 @@ function init_unleash() {
 
 function up_scaffold() {
     scaffold_set_up_network "$PROJECT_NAME-bridge" $DOCKER_NETWORK_SUBNET $DOCKER_NETWORK_GATEWAY
-    $_DC --compatibility -p $PROJECT_NAME -f $CLI_HOME/scaffold.yaml up -d --build
+    $_DC --compatibility -p $PROJECT_NAME -f $CLI_HOME/scaffold.yaml up -d --build --remove-orphans
 }
 
 function post_up_scaffold() {
@@ -377,9 +421,9 @@ function post_up_scaffold() {
 }
 
 function down_scaffold() {
-    $_DC --compatibility -p $PROJECT_NAME -f $CLI_HOME/scaffold.yaml down
+    $_DC --compatibility -p $PROJECT_NAME -f $CLI_HOME/scaffold.yaml down --remove-orphans
     if [ -f "$CLI_HOME/premium-scaffold.yaml" ]; then
-            $_DC --compatibility -p $PROJECT_NAME -f $CLI_HOME/premium-scaffold.yaml down
+            $_DC --compatibility -p $PROJECT_NAME -f $CLI_HOME/premium-scaffold.yaml down --remove-orphans
     fi
 }
 
@@ -419,9 +463,9 @@ function kill_all_containers() {
 
 function scaffold_destroy_confirmed() {
     kill_all_containers
-    $_DC --compatibility -p $PROJECT_NAME -f $CLI_HOME/scaffold.yaml down
+    $_DC --compatibility -p $PROJECT_NAME -f $CLI_HOME/scaffold.yaml down --remove-orphans
     if [ -f "$CLI_HOME/premium-scaffold.yaml" ]; then
-            $_DC --compatibility -p $PROJECT_NAME -f $CLI_HOME/premium-scaffold.yaml down
+            $_DC --compatibility -p $PROJECT_NAME -f $CLI_HOME/premium-scaffold.yaml down --remove-orphans
     fi
 
     # needed because if there are no volumes this might cause the script to exit
@@ -482,12 +526,16 @@ function start() {
     done
 }
 
-SCRIPT_USAGE="${YELLOW}${PROJECT_NAME} CLI ${RESET}\n\nExample usage: ./cli [ prod, dev, clean-dev, prod-ee, dev-ee, clean-dev-ee, prod-backend, dev-backend, clean-dev-backend, scaffold =>, service =>, build =>, build-and-push ]"
+SCRIPT_USAGE="${YELLOW}${PROJECT_NAME} CLI ${RESET}\n\nExample usage: ./cli [ prod, dev, clean-dev, prod-ee, dev-ee, clean-dev-ee, prod-backend, dev-backend, clean-dev-backend, clean-orphans, scaffold =>, service =>, build =>, build-and-push ]"
 
 [[ -z "$1" ]] && say "$SCRIPT_USAGE" && exit 1
 while test $# -gt 0
 do
     case "$1" in
+        clean-orphans)
+            clean_orphans
+            exit;
+        ;;
         scaffold) scaffold $2 $3 $4 $5
             echo -e "\nScript ran successfully. Check the website on http://localhost:8081";
             exit;
