@@ -11,7 +11,7 @@ export default {
     description: 'Sync profile information and comments on articles.',
   },
   image:
-    'https://cdn-icons-png.flaticon.com/512/5969/5969051.png',
+    '/images/integrations/dev.webp',
   connectComponent: DevtoConnect,
   url: ({ username }) => (username ? `https://dev.to/${username}` : null),
   chartColor: '#9CA3AF',
