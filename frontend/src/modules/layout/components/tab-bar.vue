@@ -1,46 +1,40 @@
 <template>
-  <div class="fixed top-0 left-0 right-0 z-[3000] bg-black border-b border-zinc-800 h-[45px]">
-    <div class="flex items-center h-full">
-      <!-- Scrollable Tabs Container -->
-      <div ref="tabsContainer" class="flex-1 overflow-x-auto no-scrollbar">
-        <div class="flex items-center min-w-max">
-          <div
-            v-for="tab in tabs"
-            :key="tab.id"
-            :data-tab-id="tab.id"
-            class="group flex items-center px-4 py-2.5 text-sm cursor-pointer border-r border-zinc-800 min-w-[140px] max-w-[240px] transition-all relative select-none h-[45px]"
-            :class="{
-              'bg-zinc-900 text-white': activeTabPath === tab.path,
-              'text-zinc-200 hover:bg-zinc-900/50 hover:text-zinc-300': activeTabPath !== tab.path,
-              'opacity-75': isSleeping(tab)
-            }"
-            @click="handleTabClick(tab)"
+  <div class="fixed top-0 left-0 right-0 z-[3000] tabbar-bg h-[56px]">
+    <div class="flex items-center h-full px-4">
+      <!-- Top selector (replaces multi-tab bar) -->
+      <div ref="tabsContainer" class="flex-1 flex items-center">
+        <div class="top-tabs w-full flex items-center justify-between">
+          <el-button
+            class="top-tab-btn"
+            :class="{ active: selectedTop === 'signals' }"
+            @click="setTop('signals')"
+            size="small"
           >
-            <div 
-              v-if="activeTabPath === tab.path"
-              class="absolute top-0 left-0 right-0 h-0.5 bg-brand-500"
-            />
-            
-            <!-- Icon based on route name -->
-            <i v-if="tab.name?.includes('member')" class="ri-user-line mr-2 text-xs" />
-            <i v-else-if="tab.name?.includes('organization')" class="ri-building-line mr-2 text-xs" />
-            <i v-else-if="tab.name?.includes('settings')" class="ri-settings-3-line mr-2 text-xs" />
-            <i v-else class="ri-file-list-line mr-2 text-xs" />
+            Signals
+          </el-button>
 
-            <span class="truncate mr-2 flex-1">{{ tab.title }}</span>
-            
-            <div
-              class="opacity-0 group-hover:opacity-100 hover:bg-zinc-700 rounded p-0.5 transition-all text-zinc-400 hover:text-white flex items-center justify-center"
-              @click.stop="handleTabClose(tab)"
-            >
-              <i class="ri-close-line text-xs" />
-            </div>
-          </div>
+          <el-button
+            class="top-tab-btn"
+            :class="{ active: selectedTop === 'chat' }"
+            @click="setTop('chat')"
+            size="small"
+          >
+            Chat
+          </el-button>
+
+          <el-button
+            class="top-tab-btn"
+            :class="{ active: selectedTop === 'devtel' }"
+            @click="setTop('devtel')"
+            size="small"
+          >
+            DevTel
+          </el-button>
         </div>
       </div>
 
       <!-- Fixed Right Section -->
-      <div class="flex items-center shrink-0 bg-black border-l border-zinc-800">
+      <div class="flex items-center shrink-0 status-area">
         <!-- Page Status Badge -->
         <div v-if="badge && badge !== 'NONE'" class="px-3 flex items-center">
           <el-tooltip
@@ -48,18 +42,11 @@
             placement="bottom"
             effect="dark"
           >
-            <span 
-              class="px-2 py-0.5 rounded text-[10px] font-mono font-medium tracking-wider uppercase border cursor-help"
-              :class="{
-                'bg-purple-500/10 text-purple-400 border-purple-500/20': badge === 'BETA',
-                'bg-blue-500/10 text-blue-400 border-blue-500/20': badge === 'COMING SOON',
-                'bg-yellow-500/10 text-yellow-400 border-yellow-500/20': badge === 'ALPHA',
-                'bg-green-500/10 text-green-400 border-green-500/20': badge === 'STABLE',
-                'bg-zinc-800 text-zinc-400 border-zinc-700': !['BETA', 'COMING SOON', 'ALPHA', 'STABLE'].includes(badge)
-              }"
-            >
-              {{ badge }}
-            </span>
+              <span 
+                class="px-3 py-1 rounded text-[11px] font-mono font-medium tracking-wider uppercase border cursor-help neutral-badge"
+              >
+                {{ badge }}
+              </span>
           </el-tooltip>
         </div>
 
@@ -212,15 +199,17 @@
 <script setup lang="ts">
 import { watch, computed, onMounted, nextTick, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { useTabsStore } from '../store/tabs';
-import { storeToRefs } from 'pinia';
+import { useTopNavStore } from '@/modules/layout/store/topNav';
+import { useTabsStore } from '@/modules/layout/store/tabs';
+import { signalsMainMenu, chatMenu, devtelMenu } from '@/modules/layout/config/menu';
 import { useStore } from 'vuex';
 import pageStatus from '@/config/page-status.json';
 
 const route = useRoute();
 const router = useRouter();
+const topNav = useTopNavStore();
 const tabsStore = useTabsStore();
-const { tabs, activeTabPath } = storeToRefs(tabsStore);
+topNav.init();
 const store = useStore();
 
 const tabsContainer = ref(null);
@@ -235,28 +224,14 @@ const badge = computed(() => {
   return route.meta?.badge;
 });
 
-// Check if tabs container needs scrolling
-const checkScrollable = () => {
+// Check if container needs minor update on mount
+onMounted(() => {
   nextTick(() => {
     if (tabsContainer.value) {
-      const isScrollable = tabsContainer.value.scrollWidth > tabsContainer.value.clientWidth;
-      if (isScrollable) {
-        tabsContainer.value.classList.add('scrollable');
-      } else {
-        tabsContainer.value.classList.remove('scrollable');
-      }
+      // keep placeholder for styling decisions
     }
   });
-};
-
-onMounted(() => {
-  checkScrollable();
 });
-
-// Watch tabs changes to update scrollable state
-watch(tabs, () => {
-  checkScrollable();
-}, { deep: true });
 
 // Notification-related computed properties
 const integrationsInProgress = computed(() => store.getters['integration/inProgress']);
@@ -297,59 +272,31 @@ const integrationsNeedReconnectToString = computed(() => {
   return `${arr.slice(0, arr.length - 1).join(', ')}, and ${arr.slice(-1)}`;
 });
 
-// Watch route changes to add tabs
-watch(
-  () => route.fullPath,
-  () => {
-    if (route.name && route.name !== 'Login' && route.name !== 'Error') {
-      tabsStore.addTab(route);
-    }
-  },
-  { immediate: true }
-);
+const selectedTop = computed(() => topNav.selected);
 
-// Watch active tab path to navigate and scroll into view
-watch(activeTabPath, (newPath) => {
-  if (newPath && newPath !== route.fullPath) {
-    router.push(newPath);
+const setTop = (value: 'signals' | 'chat' | 'devtel') => {
+  topNav.set(value);
+};
+
+// When top changes, navigate to last opened for that group or default first menu item
+watch(() => topNav.selected, (newVal) => {
+  // Prefer lastVisited stored in topNav
+  const last = topNav.lastVisited?.[newVal];
+  if (last) {
+    router.push(last).catch(() => {});
+    return;
   }
-  // Find the active tab and scroll it into view
-  const activeTab = tabs.value.find(tab => tab.path === newPath);
-  if (activeTab) {
-    scrollTabIntoView(activeTab);
+
+  // Fallback to first menu link
+  let menu = signalsMainMenu;
+  if (newVal === 'chat') menu = chatMenu;
+  if (newVal === 'devtel') menu = devtelMenu;
+  const first = menu.find((m: any) => m && (m.routeName || m.path));
+  if (first) {
+    if (first.routeName) router.push({ name: first.routeName }).catch(() => {});
+    else if (first.path) router.push(first.path).catch(() => {});
   }
-});
-
-const handleTabClick = (tab: any) => {
-  tabsStore.setActiveTab(tab.path);
-  scrollTabIntoView(tab);
-};
-
-const scrollTabIntoView = (tab: any) => {
-  nextTick(() => {
-    const tabElement = document.querySelector(`[data-tab-id="${tab.id}"]`);
-    if (tabElement && tabsContainer.value) {
-      tabElement.scrollIntoView({ 
-        behavior: 'smooth', 
-        block: 'nearest', 
-        inline: 'center' 
-      });
-    }
-  });
-};
-
-const handleTabClose = (tab: any) => {
-  tabsStore.removeTab(tab.path);
-  // If we closed the last tab, navigate to home
-  if (tabs.value.length === 0) {
-    router.push('/');
-  }
-};
-
-const isSleeping = (tab: any) => {
-  const SLEEP_THRESHOLD = 15 * 60 * 1000; // 15 minutes
-  return tab.path !== activeTabPath.value && (Date.now() - tab.lastAccessed) > SLEEP_THRESHOLD;
-};
+}, { immediate: false });
 </script>
 
 <style scoped>
@@ -382,6 +329,66 @@ const isSleeping = (tab: any) => {
 /* Hide shadow when not needed */
 .no-scrollbar:not(.scrollable)::before {
   display: none;
+}
+
+/* Top tabs glassy styling */
+.tabbar-bg {
+  backdrop-filter: blur(8px);
+  background: linear-gradient(180deg, rgba(0,0,0,0.55), rgba(0,0,0,0.45));
+  border-bottom: 1px solid rgba(255,255,255,0.12); /* stronger separator */
+  box-shadow: 0 2px 6px rgba(0,0,0,0.6); /* subtle drop shadow for separation */
+}
+
+.top-tabs {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.top-tab-btn {
+  flex: 1 1 0;
+  min-width: 0;
+  height: 40px;
+  background: rgba(255,255,255,0.02) !important;
+  color: rgba(255,255,255,0.92) !important;
+  border: 1px solid rgba(255,255,255,0.04) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 600;
+  padding: 0 12px !important;
+}
+
+.top-tab-btn:hover {
+  background: rgba(255,255,255,0.04) !important;
+}
+
+.top-tab-btn.active {
+  background: rgba(255,255,255,0.06) !important; /* slightly greyish */
+  color: rgba(255,255,255,0.92) !important;
+  border-color: rgba(255,255,255,0.06) !important;
+}
+
+.neutral-badge {
+  background: rgba(255,255,255,0.04) !important;
+  color: rgba(255,255,255,0.9) !important;
+  border: 1px solid rgba(255,255,255,0.06) !important;
+}
+
+.status-area {
+  margin-left: 12px;
+  width: 220px; /* fixed space for status area to avoid layout jumps */
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+/* Make the right-section contents stable */
+.status-area .px-3 {
+  padding-left: 8px !important;
+  padding-right: 8px !important;
 }
 </style>
 

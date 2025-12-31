@@ -4,7 +4,7 @@
     <tab-bar />
 
     <!-- Main Content Area with top padding to account for fixed tab bar -->
-    <el-container class="flex-1 overflow-hidden bg-black relative pt-[45px]">
+    <el-container class="flex-1 overflow-hidden bg-black relative pt-[56px]">
       <!-- Mobile Overlay -->
       <div 
         v-if="isMobile && !collapsed" 
@@ -48,9 +48,7 @@
           </banner>
         </div>
         <router-view v-slot="{ Component }">
-          <keep-alive :include="cachedViews" :max="10">
-            <component :is="Component" :key="route.fullPath" />
-          </keep-alive>
+          <component :is="Component" :key="route.fullPath" />
         </router-view>
         </el-main>
       </el-container>
@@ -58,13 +56,14 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import { mapActions, mapGetters } from 'vuex';
 import AppMenu from '@/modules/layout/components/menu.vue';
 import TabBar from '@/modules/layout/components/tab-bar.vue';
-import { useTabsStore } from '@/modules/layout/store/tabs';
-import { onMounted, onUnmounted } from 'vue';
-import { useRoute } from 'vue-router';
+import { onMounted, onUnmounted, watch } from 'vue';
+import { useTopNavStore } from '@/modules/layout/store/topNav';
+import { signalsMainMenu, chatMenu, devtelMenu } from '@/modules/layout/config/menu';
+import { useRoute, useRouter } from 'vue-router';
 
 export default {
   name: 'AppLayout',
@@ -75,22 +74,56 @@ export default {
   },
 
   setup() {
-    const tabsStore = useTabsStore();
     const route = useRoute();
+    const router = useRouter();
+    const topNav = useTopNavStore();
+    topNav.init();
 
-    // Check inactivity every minute
-    let timer;
+    // Initialize top selection based on current route
+    // Robustly check by route name and resolved paths to avoid misclassification on refresh
+    const findGroupForRoute = (r: any) => {
+      const name = r.name;
+      const fullPath = r.fullPath || '';
+
+      const matches = (menu: any[]) => {
+        return menu.some((m: any) => {
+          if (!m) return false;
+          if (m.routeName && name && m.routeName === name) return true;
+          if (m.path && fullPath && fullPath.startsWith(m.path)) return true;
+          if (m.routeName) {
+            try {
+              const resolved = router.resolve({ name: m.routeName });
+              if (resolved && resolved.href && fullPath.startsWith(resolved.href)) return true;
+            } catch (e) {
+              // ignore resolution errors
+            }
+          }
+          return false;
+        });
+      };
+
+      if (matches(chatMenu)) return 'chat';
+      if (matches(devtelMenu)) return 'devtel';
+      return 'signals';
+    };
+
+    // Set initial top to match route (so sidebar and content align on refresh)
     onMounted(() => {
-      timer = setInterval(() => {
-        tabsStore.checkInactivity();
-      }, 60000);
+      const group = findGroupForRoute(route);
+      topNav.set(group as any);
     });
 
-    onUnmounted(() => {
-      if (timer) clearInterval(timer);
-    });
+    // Persist last visited for the active top when route changes
+    watch(
+      () => route.fullPath,
+      (p) => {
+        const selected = topNav.selected as 'signals' | 'chat' | 'devtel';
+        if (selected) topNav.setLastVisited(selected, p || '/');
+      },
+      { immediate: true },
+    );
 
-    return { tabsStore, route };
+    return { route, topNav };
   },
 
   data() {
@@ -109,9 +142,7 @@ export default {
       integrationsInProgress: 'integration/inProgress',
     }),
 
-    cachedViews() {
-      return this.tabsStore.tabs.map((t) => t.name);
-    },
+    // No cached views: keep-alive removed to prevent background tab pages
   },
 
   created() {
@@ -175,7 +206,7 @@ export default {
 // Global override for Element Plus drawers and dialogs
 // This ensures they respect the top bar height and don't overlap it
 .el-overlay {
-  top: 45px !important; // Height of the tab bar
-  height: calc(100% - 45px) !important;
+  top: 56px !important; // Height of the tab bar
+  height: calc(100% - 56px) !important;
 }
 </style>

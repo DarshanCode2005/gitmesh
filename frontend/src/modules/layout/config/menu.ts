@@ -15,20 +15,33 @@ import usersPermissions from './links/users-permissions';
 import apiKeys from './links/api-keys';
 import plansBilling from './links/plans-billing';
 
-export const mainMenu: MenuLink[] = [
+// Signals (default) main menu: everything except DevTel (reports)
+export const signalsMainMenu: MenuLink[] = [
   home,
   contacts,
   organizations,
   activities,
-  reports,
 ];
 
-// Bottom menu
-export const bottomMenu: MenuLink[] = [
-  chat,
+// Signals bottom menu: everything except chat
+export const signalsBottomMenu: MenuLink[] = [
   automations,
   integrations,
 ];
+
+// Chat-only menu
+export const chatMenu: MenuLink[] = [
+  chat,
+];
+
+// DevTel-only menu (reports)
+export const devtelMenu: MenuLink[] = [
+  reports,
+];
+
+// Backwards-compatible exports (default to Signals menus)
+export const mainMenu: MenuLink[] = signalsMainMenu;
+export const bottomMenu: MenuLink[] = signalsBottomMenu;
 
 // Support menu
 export const supportMenu: MenuLink[] = [
