@@ -22,7 +22,7 @@ import {
   Filler,
 } from 'chart.js';
 import 'chartjs-adapter-moment';
-import { h } from 'vue';
+import { h, watch } from 'vue';
 import annotationPlugin from 'chartjs-plugin-annotation';
 import {
   backgroundChartPlugin,
@@ -154,15 +154,26 @@ const createComponent = (app, tagName, ChartType) => {
     data() {
       return {
         chartId: null,
+        renderCount: 0,
+        updateCount: 0,
+        lastUpdateTime: null,
       };
     },
     computed: {
       chartStyle() {
-        // hack to watch data and options
-        // eslint-disable-next-line no-unused-expressions
-        this.data;
-        // eslint-disable-next-line no-unused-expressions
-        this.chartOptions;
+        console.log(`[CHARTKICK-CRITICAL] chartStyle computed - ID: ${this.chartId}, renderCount: ${this.renderCount}`);
+        
+        // REMOVED THE HACK: This was likely causing the infinite re-renders
+        // The original hack was watching data and options in the computed property
+        // which would cause this computed to re-run every time data changed
+        // causing the template to re-render, causing updated() to fire
+        
+        // OLD PROBLEMATIC CODE:
+        // // hack to watch data and options
+        // // eslint-disable-next-line no-unused-expressions
+        // this.data;
+        // // eslint-disable-next-line no-unused-expressions
+        // this.chartOptions;
 
         return {
           height: this.height || '300px',
@@ -176,6 +187,69 @@ const createComponent = (app, tagName, ChartType) => {
         };
       },
       chartOptions() {
+        console.log(`[CHARTKICK-CRITICAL] chartOptions computed - ID: ${this.chartId}, options keys:`, Object.keys(this.getChartOptions()));
+        
+        return this.getChartOptions();
+      },
+    },
+    created() {
+      this.chartId = this.chartId || this.id;
+    },
+    mounted() {
+      console.log(`[CHARTKICK-CRITICAL] Component mounted - ID: ${this.chartId}`);
+      this.updateChart();
+      
+      // IMPROVED: More stable watcher that doesn't trigger on every tiny change
+      this.unwatchData = watch(
+        () => {
+          // Create a stable representation of the data and options
+          const dataHash = this.data ? JSON.stringify(this.data).substring(0, 100) : null;
+          const optionsHash = JSON.stringify(Object.keys(this.chartOptions || {}));
+          return `${dataHash}|${optionsHash}`;
+        },
+        (newHash, oldHash) => {
+          if (newHash !== oldHash) {
+            console.log(`[CHARTKICK-CRITICAL] Watch triggered - ID: ${this.chartId}, hash changed from ${oldHash} to ${newHash}`);
+            this.updateChart();
+          }
+        },
+        { 
+          deep: false, // Don't do deep watching since we're creating our own hash
+          flush: 'post' // Run after DOM updates
+        }
+      );
+    },
+    updated() {
+      this.renderCount++;
+      const now = Date.now();
+      const timeSinceLastUpdate = this.lastUpdateTime ? now - this.lastUpdateTime : 0;
+      
+      console.error(`[CHARTKICK-CRITICAL] Component updated - ID: ${this.chartId}, renderCount: ${this.renderCount}, timeSinceLastUpdate: ${timeSinceLastUpdate}ms`);
+      
+      if (timeSinceLastUpdate < 100 && this.renderCount > 5) {
+        console.error(`[CHARTKICK-INFINITE-LOOP] Potential infinite loop detected! ID: ${this.chartId}, renderCount: ${this.renderCount}, rapid updates detected`);
+        console.trace('Stack trace for infinite loop detection');
+        return; // Prevent further updates to break the loop
+      }
+      
+      // FIXED: Remove updateChart() call from updated() hook to prevent infinite loop
+      // The chart should only be updated when props actually change, not on every render
+      // this.updateChart();
+    },
+    beforeUnmount() {
+      console.log(`[CHARTKICK-CRITICAL] Component beforeUnmount - ID: ${this.chartId}, final renderCount: ${this.renderCount}, final updateCount: ${this.updateCount}`);
+      
+      // FIXED: Clean up the watcher to prevent memory leaks
+      if (this.unwatchData) {
+        this.unwatchData();
+      }
+      
+      if (this.chart) {
+        this.chart.destroy();
+      }
+    },
+    methods: {
+      getChartOptions() {
         const options = {};
         const props = Object.keys(this.$props);
         for (let i = 0; i < props.length; i += 1) {
@@ -184,32 +258,30 @@ const createComponent = (app, tagName, ChartType) => {
             options[prop] = this[prop];
           }
         }
+        
+        // FIXED: Disable Chart.js responsive behavior to prevent resize loops
+        if (options.library && options.library.responsive !== false) {
+          options.library.responsive = false;
+          options.library.maintainAspectRatio = false;
+        }
+        
         return options;
       },
-    },
-    created() {
-      this.chartId = this.chartId || this.id;
-    },
-    mounted() {
-      this.updateChart();
-    },
-    updated() {
-      this.updateChart();
-    },
-    beforeUnmount() {
-      if (this.chart) {
-        this.chart.destroy();
-      }
-    },
-    methods: {
       updateChart() {
+        this.updateCount++;
+        this.lastUpdateTime = Date.now();
+        
+        console.log(`[CHARTKICK-CRITICAL] updateChart called - ID: ${this.chartId}, updateCount: ${this.updateCount}, hasChart: ${!!this.chart}, hasData: ${!!this.data}`);
+        
         if (this.data !== null) {
           if (this.chart) {
+            console.log(`[CHARTKICK-CRITICAL] Updating existing chart - ID: ${this.chartId}`);
             this.chart.updateData(
               this.data,
               this.chartOptions,
             );
           } else {
+            console.log(`[CHARTKICK-CRITICAL] Creating new chart - ID: ${this.chartId}`);
             this.chart = new ChartType(
               this.chartId,
               this.data,
@@ -217,6 +289,7 @@ const createComponent = (app, tagName, ChartType) => {
             );
           }
         } else if (this.chart) {
+          console.log(`[CHARTKICK-CRITICAL] Destroying chart (no data) - ID: ${this.chartId}`);
           this.chart.destroy();
           this.chart = null;
           this.$el.innerText = 'Loading...';

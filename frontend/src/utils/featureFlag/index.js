@@ -33,14 +33,36 @@ class FeatureFlagService {
     }
   }
 
-  init(tenant) {
+  async init(tenant) {
     if (config.isCommunityVersion) {
       return;
     }
 
     const { init: initLogRocket, captureException } = useLogRocket();
 
-    this.unleash.start();
+    // Probe Unleash server before starting the client to avoid repeated
+    // failing network requests (metrics POSTs) when the proxy isn't running.
+    try {
+      // Try a simple GET to the base URL; if connection is refused this will throw.
+      // Use no-cors so the probe fails fast on network errors but won't break on CORS.
+      await fetch(config.unleash.url, { method: 'GET', mode: 'no-cors' });
+    } catch (err) {
+      captureException(err);
+      store.dispatch('tenant/doUpdateFeatureFlag', {
+        hasError: true,
+      });
+      return;
+    }
+
+    try {
+      this.unleash.start();
+    } catch (err) {
+      captureException(err);
+      store.dispatch('tenant/doUpdateFeatureFlag', {
+        hasError: true,
+      });
+      return;
+    }
 
     const context = this.getContextFromTenant(tenant);
 

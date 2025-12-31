@@ -44,7 +44,7 @@ export const hubspotOrganizationFilters: Record<string, FilterConfig> = {
 export const hubspot: AutomationTypeConfig = {
   name: 'HubSpot',
   description: 'Send contacts or organizations to HubSpot',
-  icon: '/images/integrations/hubspot.png',
+  icon: '/images/automation/hubspot.png',
   plan: 'Scale',
   featureFlag: FeatureFlag.flags.hubspot,
   emptyScreen: {

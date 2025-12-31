@@ -8,7 +8,7 @@
     <template #header>
       <div>
         <div class="flex items-center">
-          <img :alt="typeData.name" :src="typeData.pngn" class="w-4 max-w-4">
+          <img :alt="typeData.name" :src="typeData.icon" class="w-4 max-w-4">
           <p class="pl-2 text-xs text-gray-200">
             {{ typeData.name }}
           </p>

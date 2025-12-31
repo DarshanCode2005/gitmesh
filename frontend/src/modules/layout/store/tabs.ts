@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import { useTopNavStore } from '@/modules/layout/store/topNav';
 
 export interface Tab {
   id: string;
@@ -11,40 +12,52 @@ export interface Tab {
   lastAccessed: number;
 }
 
+type Group = {
+  tabs: Tab[];
+  activeTabPath: string;
+};
+
 export const useTabsStore = defineStore('tabs', {
   state: () => ({
-    tabs: [] as Tab[],
-    activeTabPath: '' as string,
+    groups: {
+      signals: { tabs: [] as Tab[], activeTabPath: '' } as Group,
+      chat: { tabs: [] as Tab[], activeTabPath: '' } as Group,
+      devtel: { tabs: [] as Tab[], activeTabPath: '' } as Group,
+    },
     inactivityTimer: null as any,
   }),
 
   actions: {
+    // Helper to get current group based on top nav
+    _currentGroup() {
+      const topNav = useTopNavStore();
+      // @ts-ignore
+      return this.groups[topNav.selected];
+    },
+
     addTab(route: any) {
+      const group = this._currentGroup();
       const path = route.fullPath || route.path;
       const now = Date.now();
-      
-      // Check if tab with same name and params exists
-      const existingTabIndex = this.tabs.findIndex(t => 
-        t.name === route.name && 
-        JSON.stringify(t.params) === JSON.stringify(route.params)
+
+      // Don't add login, error pages
+      if (route.name === 'login' || route.name === 'error') return;
+
+      const existingIndex = group.tabs.findIndex(t =>
+        t.name === route.name && JSON.stringify(t.params) === JSON.stringify(route.params)
       );
 
-      if (existingTabIndex !== -1) {
-        // Update existing tab path (to keep query params in sync)
-        this.tabs[existingTabIndex].path = path;
-        this.tabs[existingTabIndex].query = route.query;
-        this.tabs[existingTabIndex].params = route.params;
-        this.tabs[existingTabIndex].lastAccessed = now;
-        this.activeTabPath = path;
+      if (existingIndex !== -1) {
+        group.tabs[existingIndex].path = path;
+        group.tabs[existingIndex].query = route.query;
+        group.tabs[existingIndex].params = route.params;
+        group.tabs[existingIndex].lastAccessed = now;
+        group.activeTabPath = path;
         return;
       }
 
-      // Don't add login, error pages, etc. if needed
-      if (route.name === 'login' || route.name === 'error') return;
-
       const title = route.meta?.title || (route.name as string) || 'Untitled';
-
-      this.tabs.push({
+      group.tabs.push({
         id: Math.random().toString(36).substring(2, 9),
         path,
         title,
@@ -55,54 +68,62 @@ export const useTabsStore = defineStore('tabs', {
         lastAccessed: now,
       });
 
-      this.activeTabPath = path;
+      group.activeTabPath = path;
     },
 
     removeTab(path: string) {
-      const index = this.tabs.findIndex((t) => t.path === path);
+      const group = this._currentGroup();
+      const index = group.tabs.findIndex((t) => t.path === path);
       if (index === -1) return;
 
-      this.tabs.splice(index, 1);
+      group.tabs.splice(index, 1);
 
-      // If we closed the active tab, switch to the next available one
-      if (this.activeTabPath === path) {
-        const nextTab = this.tabs[index] || this.tabs[index - 1];
-        if (nextTab) {
-          this.activeTabPath = nextTab.path;
-        } else {
-          this.activeTabPath = '';
-        }
+      if (group.activeTabPath === path) {
+        const nextTab = group.tabs[index] || group.tabs[index - 1];
+        group.activeTabPath = nextTab ? nextTab.path : '';
       }
     },
 
     setActiveTab(path: string) {
-      this.activeTabPath = path;
-      const tab = this.tabs.find(t => t.path === path);
-      if (tab) {
-        tab.lastAccessed = Date.now();
-      }
+      const group = this._currentGroup();
+      group.activeTabPath = path;
+      const tab = group.tabs.find(t => t.path === path);
+      if (tab) tab.lastAccessed = Date.now();
     },
 
     closeOtherTabs(path: string) {
-      this.tabs = this.tabs.filter((t) => t.path === path);
-      this.activeTabPath = path;
+      const group = this._currentGroup();
+      group.tabs = group.tabs.filter((t) => t.path === path);
+      group.activeTabPath = path;
     },
 
     closeAllTabs() {
-      this.tabs = [];
-      this.activeTabPath = '';
+      const group = this._currentGroup();
+      group.tabs = [];
+      group.activeTabPath = '';
     },
 
     checkInactivity() {
       const now = Date.now();
-      // Auto close after 30 minutes (1800000 ms)
       const AUTO_CLOSE_THRESHOLD = 30 * 60 * 1000;
-      
-      // Filter out tabs that are inactive for too long, but keep the active one
-      this.tabs = this.tabs.filter(tab => {
-        if (tab.path === this.activeTabPath) return true;
-        return (now - tab.lastAccessed) < AUTO_CLOSE_THRESHOLD;
+      Object.keys(this.groups).forEach((k) => {
+        // @ts-ignore
+        const group: Group = this.groups[k];
+        group.tabs = group.tabs.filter(tab => {
+          if (tab.path === group.activeTabPath) return true;
+          return (now - tab.lastAccessed) < AUTO_CLOSE_THRESHOLD;
+        });
       });
+    },
+
+    // Utilities for other components
+    getTabsFor(top: 'signals' | 'chat' | 'devtel') {
+      // @ts-ignore
+      return this.groups[top].tabs;
+    },
+    getActiveFor(top: 'signals' | 'chat' | 'devtel') {
+      // @ts-ignore
+      return this.groups[top].activeTabPath;
     },
   },
 });

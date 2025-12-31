@@ -79,7 +79,7 @@ export function chartOptions(widget, resultSet) {
   } else if (type === 'pie' || type === 'donut') {
     chartTypeOptions = {
       donut: true,
-      legend: 'right',
+      legend: true,
       library: {
         spacing: 4,
         borderWidth: 0,

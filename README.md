@@ -10,187 +10,189 @@
 [![OpenSource License](https://img.shields.io/badge/License-Apache%20License-orange.svg?style=for-the-badge)](LICENSE.md)
 [![Contributors](https://img.shields.io/github/contributors/LF-Decentralized-Trust-labs/gitmesh.svg?style=for-the-badge&logo=git)](https://github.com/LF-Decentralized-Trust-labs/gitmesh/graphs/contributors)
 [![Alpha Release](https://img.shields.io/badge/Status-Alpha%20Version-yellow.svg?style=for-the-badge)](#)
-[![Join Weekly Dev Call](https://img.shields.io/badge/Join%20Weekly%20Dev%20Call-Zoom-blue.svg?style=for-the-badge&logo=zoom)](https://zoom-lfx.platform.linuxfoundation.org/meeting/96608771523?password=211b9c60-b73a-4545-8913-75ef933f9365)
-[![Join Discord](https://img.shields.io/badge/Join%20us%20on-Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/xXvYkK3yEp)
 [![OpenSSF Best Practices](https://img.shields.io/badge/OpenSSF-Silver%20Best%20Practices-silver.svg?style=for-the-badge&logo=opensourceinitiative)](https://www.bestpractices.dev/projects/10972)
 
-**Code with purpose, Integrate with confidence**
+### Build what wins, not what's loud.
 
-[![Documentation](https://img.shields.io/badge/Documentation-000000?style=flat&logo=readthedocs)](https://github.com/LF-Decentralized-Trust-labs/gitmesh/README.md) 
-[![Join Community](https://img.shields.io/badge/Join_Community-000000?style=flat&logo=discord)](https://discord.gg/xXvYkK3yEp)
-[![OSS Website](https://img.shields.io/badge/OSS_Website-000000?style=flat&logo=vercel)](https://www.gitmesh.dev) 
-[![Join Waitlist](https://img.shields.io/badge/Join_Waitlist-000000?style=flat&logo=mailchimp)](https://www.alveoli.app)
+[![OSS Website](https://img.shields.io/badge/OSS_Website-000000?style=flat&logo=vercel&logoColor=white)](https://www.gitmesh.dev)
+[![Join Waitlist](https://img.shields.io/badge/Join_Waitlist-000000?style=flat&logo=mailchimp&logoColor=white)](https://www.alveoli.app)
+[![Join Weekly Dev Call](https://img.shields.io/badge/Join_Weekly_Dev_Call-000000?style=flat&logo=zoom&logoColor=white)](https://zoom-lfx.platform.linuxfoundation.org/meeting/96608771523?password=211b9c60-b73a-4545-8913-75ef933f9365)
 
 </div>
 
 ---
 
-## What is GitMesh?
+## The Hunt Begins
 
 **GitMesh** watches thousands of signals across GitHub, Reddit, X, Discord, Stack Overflow, and beyond, then correlates them with your team's actual capacity and sprint progress. Instead of manually triaging feedback or guessing priorities, you get auto-generated GitHub issues ranked by impact, ICP fit, and competitive gaps. It maps work to the right engineers, syncs milestones across your stack, and even guides implementation so your team ships what users need, not just what they asked for.
 
-Our mascot (Meshy/Mesh Wolf) reflects GitMesh's core: agile, resilient, and unstoppable together. Like a pack, we thrive on teamwork—efficient and powerful in unison.
+**Meet Meshy, our pack leader**, a wolf whose instincts mirror GitMesh's core philosophy: agile, resilient, and unstoppable together. Like wolves in a pack, we thrive on coordination, moving as one efficient and powerful force.
 
 ---
 
-## Installation
+## Quick Installation
 
-<div align="center">
-<picture>
-   <source srcset="public/meshy.png" media="(prefers-color-scheme: dark)">
-   <img src="public/mesh.png" alt="GitMesh Mascot" width="250">
-</picture>
-</div>
+> Currently supports Linux-based systems only. [See issue #199](https://github.com/LF-Decentralized-Trust-labs/gitmesh/issues/199)
 
-### Prerequisites
+### System Requirements
 
-**Node.js** is required to run the application.
+Before joining the pack, ensure you have:
 
-1. Visit the [Node.js Download Page](https://nodejs.org/en/download/)
-2. Download the "LTS" (Long Term Support) version for your operating system
-3. Run the installer, accepting the default settings
-4. Verify Node.js is properly installed:
-   - **Windows Users**: Press `Windows + R`, type `sysdm.cpl`, press Enter, go to "Advanced" tab → "Environment Variables", and check if `Node.js` appears in the "Path" variable
-   - **Mac/Linux Users**: Open Terminal, type `echo $PATH`, and look for `/usr/local/bin` in the output
-5. Install [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/)
-6. Install [Git](https://git-scm.com/downloads)
+- **Node.js LTS** – [Download here](https://nodejs.org/en/download/)
+  - Verify installation: `echo $PATH` (look for `/usr/local/bin`)
+- **Docker & Docker Compose** – [Installation guide](https://docs.docker.com/get-docker/)
+- **Git** – [Git Download](https://git-scm.com/downloads)
 
-### Quick Start
+### Launch Sequence
 
 ```bash
 git clone [YOUR_REPO]
 cd scripts
-./cli dev
+./cli clean-dev
 ```
 
-The application will be available at `http://localhost:8081`
+Access your instance at `http://localhost:8081`
 
-> **Note:** For Slack integration, you must expose your local server with HTTPS. Start [ngrok](https://ngrok.com/) in your project directory:
+> **Note: Slack Integration Setup**
 >
-> ```bash
-> ngrok http 8080
-> ```
+> To enable Slack functionality, you must expose your local server via HTTPS (e.g., using [ngrok](https://ngrok.com/)):
 >
-> Use the generated `https://...ngrok.io/slack/callback` URL as your Slack app's redirect URL and set `slack_redirect_url` in your local override configuration to this value.
+> `ngrok http 8080`
+>
+> Afterwards, configure your Slack app's redirect URL with the generated `https://...ngrok.io/slack/callback` endpoint and update `slack_redirect_url` in your local configuration.
 
 ---
 
-## CLI Commands
+## Command Arsenal
 
-### Development Commands
+<details>
+<summary><strong>Development Workflows</strong></summary>
 
-| Command | Description |
-|---------|-------------|
-| `./cli prod` | Start all services (production mode) |
-| `./cli dev` | Start with development mode (hot reloading) |
-| `./cli clean-dev` | Clean start with development mode |
+| Command | Purpose |
+|---------|---------|
+| `./cli prod` | Launch production environment |
+| `./cli dev` | Start with hot reloading enabled |
+| `./cli clean-dev` | Fresh development start |
 
-### Backend-Only Commands
+</details>
 
-| Command | Description |
-|---------|-------------|
-| `./cli prod-backend` | Start backend services only (production) |
-| `./cli dev-backend` | Start backend with development mode |
-| `./cli clean-dev-backend` | Clean start backend with development mode |
+<details>
+<summary><strong>Backend Operations</strong></summary>
 
-### E2E Testing
+| Command | Purpose |
+|---------|---------|
+| `./cli prod-backend` | Production backend only |
+| `./cli dev-backend` | Development backend with hot reload |
+| `./cli clean-dev-backend` | Clean backend restart |
 
-| Command | Description |
-|---------|-------------|
-| `./cli start-e2e` | Start services for E2E testing |
-| `./cli start-be` | Start backend for testing |
+</details>
 
-### Scaffold Management
+<details>
+<summary><strong>Testing Suite</strong></summary>
 
-| Command | Description |
-|---------|-------------|
+| Command | Purpose |
+|---------|---------|
+| `./cli start-e2e` | Initialize E2E testing environment |
+| `./cli start-be` | Backend testing mode |
+
+</details>
+
+<details>
+<summary><strong>Infrastructure Management</strong></summary>
+
+| Command | Purpose |
+|---------|---------|
 | `./cli scaffold up` | Start infrastructure services |
 | `./cli scaffold down` | Stop infrastructure services |
 | `./cli scaffold destroy` | Remove all volumes and data |
-| `./cli scaffold reset` | Destroy and restart infrastructure |
-| `./cli scaffold up-test` | Start test infrastructure |
+| `./cli scaffold reset` | Complete infrastructure refresh |
+| `./cli scaffold up-test` | Test infrastructure initialization |
 
-### Database Operations
+</details>
 
-| Command | Description |
-|---------|-------------|
-| `./cli scaffold create-migration <name>` | Create new migration files |
-| `./cli scaffold migrate-up` | Apply database migrations |
-| `./cli db-backup <name>` | Backup database to file |
-| `./cli db-restore <name>` | Restore database from backup |
+<details>
+<summary><strong>Database Control</strong></summary>
 
-### Service Management
+| Command | Purpose |
+|---------|---------|
+| `./cli scaffold create-migration <name>` | Generate migration files |
+| `./cli scaffold migrate-up` | Execute pending migrations |
+| `./cli db-backup <name>` | Create database backup |
+| `./cli db-restore <name>` | Restore from backup |
 
-| Command | Description |
-|---------|-------------|
-| `./cli service <name> up` | Start a specific service |
-| `./cli service <name> down` | Stop a specific service |
-| `./cli service <name> restart` | Restart a specific service |
-| `./cli service <name> logs` | View service logs |
-| `./cli service <name> status` | Check service status |
-| `./cli service list` | List all running services |
-| `./cli service up-all` | Start all services |
+</details>
 
-### Build Commands
+<details>
+<summary><strong>Service Orchestration</strong></summary>
 
-| Command | Description |
-|---------|-------------|
-| `./cli build <service> [version]` | Build a service image |
-| `./cli build-and-push <service> [version]` | Build and push to registry |
+| Command | Purpose |
+|---------|---------|
+| `./cli service <name> up` | Launch specific service |
+| `./cli service <name> down` | Stop specific service |
+| `./cli service <name> restart` | Restart service |
+| `./cli service <name> logs` | Stream service logs |
+| `./cli service <name> status` | Check service health |
+| `./cli service list` | View all active services |
+| `./cli service up-all` | Start complete service stack |
 
-### Utility Commands
+</details>
 
-Kill all Docker containers:
+<details>
+<summary><strong>Build & Deploy</strong></summary>
+
+| Command | Purpose |
+|---------|---------|
+| `./cli build <service> [version]` | Build service container |
+| `./cli build-and-push <service> [version]` | Build and publish to registry |
+
+</details>
+
+### Emergency Reset
+
+Nuclear option to clear all containers:
 
 ```bash
 docker rm -f $(docker ps -aq)
 ```
 
-### Staying Updated
+### Stay Current
 
-To get the latest changes from the repository:
+Keep your local instance synchronized with the latest updates:
 
-1. **Save Your Local Changes** (if any):
-   ```bash
-   git stash
-   ```
+```bash
+# Preserve local changes
+git stash
 
-2. **Pull Latest Updates**:
-   ```bash
-   git pull
-   ```
+# Pull latest updates
+git pull
 
-3. **Restore Your Local Changes** (if any):
-   ```bash
-   git stash pop
-   ```
+# Restore your changes
+git stash pop
+```
 
 ---
 
-## Contributing
+## Join the Pack
 
-We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+We believe the strongest solutions emerge from diverse perspectives working in concert. Whether you're fixing a bug, proposing a feature, or improving documentation, your contribution matters.
 
 [![LFX Active Contributors](https://insights.linuxfoundation.org/api/badge/active-contributors?project=lf-decentralized-trust-labs&repos=https://github.com/LF-Decentralized-Trust-labs/gitmesh)](https://insights.linuxfoundation.org/project/lf-decentralized-trust-labs/repository/lf-decentralized-trust-labs-gitmesh)
+[![GitMesh CE Governance](https://img.shields.io/github/actions/workflow/status/LF-Decentralized-Trust-labs/gitmesh/gov-sync.yml?label=GitMesh%20CE%20Governance)](https://github.com/LF-Decentralized-Trust-labs/gitmesh/actions/workflows/gov-sync.yml)
+[![Complete Roadmap](https://img.shields.io/badge/View_our-Roadmap-blue?logo=github&logoColor=white)](https://github.com/LF-Decentralized-Trust-labs/gitmesh/blob/main/ROADMAP.md)
 
-[![GitMesh CE Governance](https://github.com/LF-Decentralized-Trust-labs/gitmesh/actions/workflows/gov-sync.yml/badge.svg)](https://github.com/LF-Decentralized-Trust-labs/gitmesh/actions/workflows/gov-sync.yml)
-
-### Quick Contributing Steps
+### Contribution Path
 
 1. Fork the repository
-2. Create a new branch: `git checkout -b type/branch-name`
-3. Make your changes
-4. Sign and commit your changes: `git commit -s -m 'Add some amazing feature'`
-5. Push to the branch: `git push origin type/branch-name`
-6. Submit a signed pull request
+2. Create your feature branch: `git checkout -b type/branch-name`
+3. Commit your changes with sign-off: `git commit -s -m 'Add innovative feature'`
+4. Push to your branch: `git push origin type/branch-name`
+5. Open a signed pull request
 
-[![Complete Roadmap](https://img.shields.io/badge/View%20our-Roadmap-blue?style=for-the-badge&logo=github&logoColor=white)](https://github.com/LF-Decentralized-Trust-labs/gitmesh/blob/main/ROADMAP.md)
-
-Mesh & Meshy are excited to see what amazing contributions you'll bring to the GitMesh community!
+Read our detailed [Contributing Guide](CONTRIBUTING.md) for best practices and guidelines.
 
 ---
 
-## Our Maintainers
+## The Alpha Pack
 
 <table width="100%">
   <tr align="center">
@@ -250,37 +252,41 @@ Mesh & Meshy are excited to see what amazing contributions you'll bring to the G
 
 ---
 
-## Community & Support
+## Connect With the Community
 
 <div align="center">
 
 [![Join Discord](https://img.shields.io/badge/Join%20us%20on-Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/xXvYkK3yEp)
 
-### Support Channels
-
-| Channel | Typical Response Time | Best For |
-|---------|----------------------|----------|
-| [Discord](https://discord.gg/xXvYkK3yEp) | Real-time | Quick questions, community discussions |
-| [Email Support](mailto:gitmesh.oss@gmail.com) | 24–48 hours | Technical issues, detailed bug reports |
-| [Twitter / X](https://x.com/gitmesh_oss) | Online | Tagging the project, general updates, public reports |
-| [GitHub Issues](https://github.com/LF-Decentralized-Trust-labs/gitmesh/issues) | 1–3 days | Bug reports, feature requests, feedback |
-
 </div>
+
+Choose your preferred channel based on your needs:
+
+| Channel | Response Time | Ideal For |
+|---------|--------------|-----------|
+| [Discord](https://discord.gg/xXvYkK3yEp) | Real-time | Immediate help, community discussions, pair debugging |
+| [GitHub Issues](https://github.com/LF-Decentralized-Trust-labs/gitmesh/issues) | 1–3 days | Bug reports, feature proposals, technical feedback |
+| [Email Support](mailto:gitmesh.oss@gmail.com) | 24–48 hours | Complex technical issues, detailed investigations |
+| [Twitter / X](https://x.com/gitmesh_oss) | Variable | Project updates, community highlights, quick mentions |
 
 ---
 
-## Project Statistics
+## Project Vitals
 
 <div align="center">
 
-| Metric | Value |
-|--------|-------|
-| **Total Commits** | ![Commits](https://img.shields.io/github/commit-activity/t/LF-Decentralized-Trust-labs/gitmesh) |
-| **Pull Requests** | ![PRs](https://img.shields.io/github/issues-pr/LF-Decentralized-Trust-labs/gitmesh) |
-| **Issues Resolved** | ![Issues](https://img.shields.io/github/issues-closed/LF-Decentralized-Trust-labs/gitmesh) |
-| **Latest Release** | ![Release](https://img.shields.io/github/v/release/LF-Decentralized-Trust-labs/gitmesh) |
+| Metric | Status |
+|--------|--------|
+| **Commit Activity** | ![Commits](https://img.shields.io/github/commit-activity/t/LF-Decentralized-Trust-labs/gitmesh) |
+| **Active Pull Requests** | ![PRs](https://img.shields.io/github/issues-pr/LF-Decentralized-Trust-labs/gitmesh) |
+| **Resolved Issues** | ![Issues](https://img.shields.io/github/issues-closed/LF-Decentralized-Trust-labs/gitmesh) |
+| **Current Release** | ![Release](https://img.shields.io/github/v/release/LF-Decentralized-Trust-labs/gitmesh) |
 
-<br>
+</div>
+
+### Growth Trajectory
+
+<div align="center">
 
 <a href="https://www.star-history.com/#LF-Decentralized-Trust-labs/gitmesh&Date">
   <picture>
@@ -300,6 +306,10 @@ Mesh & Meshy are excited to see what amazing contributions you'll bring to the G
   <img src="https://www.lfdecentralizedtrust.org/hubfs/LF%20Decentralized%20Trust/lfdt-horizontal-white.png" alt="Supported by the Linux Foundation Decentralized Trust" width="220"/>
 </a>
 
-**A Lab under the [Linux Foundation Decentralized Trust](https://www.lfdecentralizedtrust.org/)** – Advancing open source innovation.
+**A Lab under the [Linux Foundation Decentralized Trust](https://www.lfdecentralizedtrust.org/)**
+
+---
+
+*Like wolves navigating vast terrain with purpose and precision, GitMesh helps teams cut through the noise to reach their destination, shipping software that truly matters.*
 
 </div>

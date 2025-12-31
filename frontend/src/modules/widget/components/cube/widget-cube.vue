@@ -81,6 +81,7 @@
 
 <script>
 import moment from 'moment';
+import { safeMoment } from '@/utils/reports';
 import { i18n } from '@/i18n';
 import Widget from '@/modules/widget/components/widget.vue';
 import WidgetTable from '../widget-table.vue';
@@ -275,7 +276,12 @@ export default {
       const series = [];
       if (seriesNames.length > 0) {
         seriesNames.forEach((e) => {
-          const data = pivot.map((p) => [p.x, p[e.key]]);
+          const data = pivot.map((p) => {
+            const xRaw = p.x;
+            const m = safeMoment(xRaw);
+            const x = m && m.isValid ? (m.isValid() ? m.toISOString() : xRaw) : xRaw;
+            return [x, p[e.key]];
+          });
           const { cube, dimension } = this.deconstructLabel(
             e.key,
           );
@@ -308,16 +314,13 @@ export default {
       return resultSet.series()[0]
         ? resultSet.series()[0].series.map((item) => {
           let { x } = item;
-          const formattedDate = moment(x).format(
-            'MMM DD',
-          );
+          const m = safeMoment(x);
+          const formattedDate = m && m.isValid && m.isValid() ? m.format('MMM DD') : x;
           x = x === '∅' ? 'unknown' : x;
           return [
-            moment(x).isValid()
+            (m && m.isValid && m.isValid())
               && ((this.query.dimensions[0]
-                && !this.query.dimensions[0].includes(
-                  'score',
-                ))
+                && !this.query.dimensions[0].includes('score'))
                 || !this.query.dimensions.length)
               ? formattedDate
               : x,
@@ -355,16 +358,15 @@ export default {
           name: seriesName,
           data: seriesItem.series.map((item) => {
             let { x } = item;
-            const formattedDate = moment(x).format(
-              this.getDateFormatForGranularity(granularity),
-            );
+            const m = safeMoment(x);
+            const formattedDate = m && m.isValid && m.isValid()
+              ? m.format(this.getDateFormatForGranularity(granularity))
+              : x;
             x = x === '∅' ? 'unknown' : x;
             return [
-              moment(x).isValid()
+              (m && m.isValid && m.isValid())
               && ((this.query.dimensions[0]
-                && !this.query.dimensions[0].includes(
-                  'score',
-                ))
+                && !this.query.dimensions[0].includes('score'))
                 || !this.query.dimensions.length)
                 ? formattedDate
                 : x,

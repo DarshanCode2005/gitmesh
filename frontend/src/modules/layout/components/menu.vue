@@ -14,11 +14,11 @@
         <cr-menu-quickstart v-if="isQuickstartEnabled" :collapsed="isCollapsed" />
 
         <!-- Menu items -->
-        <cr-menu-links class="mb-2" :links="mainMenu" :collapsed="isCollapsed" link-class="text-sm" />
+        <cr-menu-links class="mb-2" :links="currentMainMenu" :collapsed="isCollapsed" link-class="text-sm" />
 
         <div class="border-t border-zinc-700 mb-4" />
 
-        <cr-menu-links :links="bottomMenu" :collapsed="isCollapsed" link-class="text-sm" />
+        <cr-menu-links :links="currentBottomMenu" :collapsed="isCollapsed" link-class="text-sm" />
 
         <div class="grow" />
         <!-- Support popover and Toggle -->
@@ -46,13 +46,19 @@
 
 <script setup>
 import { useStore } from 'vuex';
-import { computed, watch } from 'vue';
+import { computed, watch, ref } from 'vue';
 
 import { mapGetters } from '@/shared/vuex/vuex.helpers';
 import { useActivityTypeStore } from '@/modules/activity/store/type';
 import CrMenuWorkspace from '@/modules/layout/components/menu/menu-workspace.vue';
 import CrMenuLinks from '@/modules/layout/components/menu/menu-links.vue';
-import { bottomMenu, mainMenu } from '@/modules/layout/config/menu';
+import {
+  signalsMainMenu,
+  signalsBottomMenu,
+  chatMenu,
+  devtelMenu,
+} from '@/modules/layout/config/menu';
+import { useTopNavStore } from '@/modules/layout/store/topNav';
 import CrMenuSupport from '@/modules/layout/components/menu/menu-support.vue';
 import CrMenuQuickstart from '@/modules/layout/components/menu/menu-quickstart.vue';
 import { FeatureFlag } from '@/utils/featureFlag';
@@ -74,11 +80,30 @@ watch(
 const isCollapsed = computed(
   () => store.getters['layout/menuCollapsed'],
 );
+const topNav = useTopNavStore();
+
+const selectedTop = computed(() => topNav.selected);
+
+const currentMainMenu = computed(() => {
+  if (selectedTop.value === 'chat') return chatMenu;
+  if (selectedTop.value === 'devtel') return devtelMenu;
+  return signalsMainMenu;
+});
+
+const currentBottomMenu = computed(() => {
+  if (selectedTop.value === 'chat') return [];
+  if (selectedTop.value === 'devtel') return [];
+  return signalsBottomMenu;
+});
 function toggleMenu() {
   store.dispatch('layout/toggleMenu');
 }
 
 const isQuickstartEnabled = computed(() => FeatureFlag.isFlagEnabled(FeatureFlag.flags.quickstartV2));
+
+function setTop(tab) {
+  topNav.set(tab);
+}
 </script>
 
 <script>
@@ -90,7 +115,48 @@ export default {
 <style lang="scss">
 .gitmesh-menu{
   .el-menu--vertical:not(.el-menu--collapse):not(.el-menu--popup-container) {
-    width: 281px;
+    width: 260px;
+    background: linear-gradient(180deg, rgba(0,0,0,0.6), rgba(0,0,0,0.55));
+    border-right: 1px solid rgba(255,255,255,0.03);
+    backdrop-filter: blur(6px);
+  }
+
+  .cr-menu-workspace, .cr-menu-quickstart {
+    padding: 8px 12px;
+    margin-bottom: 6px;
+  }
+
+  .menu-link {
+    border-left: 3px solid transparent;
+    align-items: center;
+    transition: background 150ms ease, color 150ms ease;
+    color: rgba(255,255,255,0.86);
+  }
+
+  .menu-link i {
+    color: rgba(255,255,255,0.66);
+    transition: color 150ms ease, transform 150ms ease;
+  }
+
+  .menu-link .menu-label{
+    color: rgba(255,255,255,0.88);
+    font-weight: 500;
+    letter-spacing: 0.2px;
+  }
+
+  .menu-link:hover {
+    background: rgba(255,255,255,0.02) !important;
+  }
+
+  .active-menu-link{
+    background: rgba(255,255,255,0.06) !important; /* slightly greyish */
+    color: rgba(255,255,255,0.92) !important;
+    border-left: none !important;
+    font-weight: 600 !important;
+  }
+
+  .active-menu-link i {
+    color: rgba(255,255,255,0.94) !important;
   }
 }
 .no-scrollbar::-webkit-scrollbar {

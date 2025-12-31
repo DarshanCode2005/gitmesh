@@ -16,7 +16,6 @@ import organization from '@/modules/organization/organization-module';
 import task from '@/modules/task/task-module';
 import quickstart from '@/modules/quickstart/quickstart-module';
 import chat from '@/modules/chat/chat-module';
-
 import user from '@/modules/user/user-module';
 import landing from '@/modules/landing/landing-module';
 
@@ -24,7 +23,6 @@ import landing from '@/modules/landing/landing-module';
 const premiumModulesGlob = import.meta.glob('../premium/*/*-module.js', { eager: true });
 const premiumModules = Object.keys(premiumModulesGlob).reduce((acc, key) => {
   // Extract module name from path (e.g., ../premium/signals/signals-module.js -> signals)
-  // key is like "../premium/signals/signals-module.js"
   const parts = key.split('/');
   // parts = ["..", "premium", "signals", "signals-module.js"]
   // We want "signals" which is at index 2 (or length - 2)

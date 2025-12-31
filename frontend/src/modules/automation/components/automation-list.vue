@@ -50,7 +50,7 @@
             >
               <div class="flex">
                 <div class="mt-0.5">
-                  <img :alt="automationType.name" :src="automationType.pngn" class="w-4 max-w-4">
+                  <img :alt="automationType.name" :src="automationType.icon" class="w-4 max-w-4">
                 </div>
                 <div class="pl-2">
                   <h6 class="text-xs leading-5 font-medium mb-0.5 text-zinc-100">

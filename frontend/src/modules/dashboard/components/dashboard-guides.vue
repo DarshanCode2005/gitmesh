@@ -4,12 +4,12 @@
       notcompletedGuides.length > 0
         && !onboardingGuidesDismissed
     "
-    class="panel !p-0 !rounded-lg mb-10"
+    class="panel !p-0 !rounded-none mb-10"
   >
-    <header class="bg-purple-900 p-4 relative">
+    <header class="bg-blue-900 p-4 relative" style="border-radius:0">
       <div class="flex justify-between items-center">
         <i
-          class="ri-lightbulb-line text-lg text-purple-100"
+          class="ri-lightbulb-line text-lg text-blue-100"
         />
         <el-tooltip
           content="Dismiss guide"
@@ -20,14 +20,14 @@
             @click="dismissGuides()"
           >
             <i
-              class="ri-close-fill text-lg text-purple-200 hover:text-white transition-colors"
+              class="ri-close-fill text-lg text-blue-200 hover:text-white transition-colors"
             />
           </div>
         </el-tooltip>
       </div>
       <div class="pb-4.5" />
       <p
-        class="text-2xs text-purple-100 font-semibold uppercase"
+        class="text-2xs text-blue-100 font-semibold uppercase"
       >
         QUICKSTART GUIDE
       </p>
@@ -251,4 +251,26 @@ export default {
     @apply bg-transparent border-none;
   }
 }
+
+/* Local CTA override for dashboard quickstart: black default, grey selected */
+.panel .btn--primary{
+  background: #000;
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.06);
+  box-shadow: none;
+}
+.panel .btn--primary:hover{
+  background: #111;
+}
+.panel .btn--primary.selected,
+.panel .btn--primary:active,
+.panel .btn--primary:focus{
+  background: #F3F4F6;
+  color: #111827;
+  border-color: rgba(15,23,42,0.04);
+}
+
+/* Ensure panel and header are square */
+.panel{ border-radius:0 !important; }
+.panel > header{ border-radius:0 !important; }
 </style>

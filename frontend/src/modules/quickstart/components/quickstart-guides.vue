@@ -9,7 +9,6 @@
         <app-loading height="7.5rem" />
       </div>
       <el-collapse
-        v-else
         v-model="activeView"
         accordion
         class="guides"
@@ -131,4 +130,39 @@ export default {
      @apply hidden;
    }
 }
+
+  .quickstart-summary{
+    background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.015));
+    border: 1px solid rgba(255,255,255,0.03);
+    border-radius: 0;
+  }
+  .quickstart-summary .completion-pill{
+    background: rgba(37,99,235,0.06);
+    color: rgba(37,99,235,0.95);
+    padding:6px 10px;
+    border-radius:999px;
+  }
+  .quickstart-summary .icon-check{ flex-shrink:0; margin-top:4px }
+  .quickstart-summary h3{ letter-spacing:0.4px }
+  .quickstart-summary ul li{ background: transparent; border-radius:0; padding:6px }
+
+  /* Override primary CTA inside quickstart panels to a modern black/grey style */
+  .panel .btn--primary{
+    background: #000;
+    color: #ffffff;
+    border: 1px solid rgba(255,255,255,0.06);
+    box-shadow: none;
+  }
+  .panel .btn--primary:hover{
+    background: #111;
+  }
+  .panel .btn--primary.selected,
+  .panel .btn--primary:active,
+  .panel .btn--primary:focus{
+    background: #F3F4F6;
+    color: #111827;
+    border-color: rgba(15,23,42,0.04);
+  }
+
+
 </style>

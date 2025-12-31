@@ -24,15 +24,15 @@
             user: currentUser,
             tenant: currentTenant,
           })"
-          class="rounded-md h-8 transition !text-zinc-400 flex items-center whitespace-nowrap
-          flex-nowrap px-1.5 hover:bg-zinc-800 hover:!text-zinc-100 mb-2 overflow-hidden"
-          :active-class="!disableActiveClass ? '!bg-zinc-800 font-medium !text-white' : ''"
-          :class="[props.linkClass, props.collapsed ? 'justify-center' : '']"
+            class="menu-link h-10 transition !text-zinc-300 flex items-center whitespace-nowrap
+            flex-nowrap px-3 hover:bg-zinc-800 mb-2 overflow-hidden"
+            active-class="active-menu-link"
+            :class="[props.linkClass, props.collapsed ? 'justify-center' : '']"
         >
-          <i v-if="link.icon" :class="[link.icon, props.iconClass, props.collapsed ? 'mr-0' : 'mr-3']" class="text-lg" />
-          <span v-if="!props.collapsed" class="">
-            {{ link.label }}
-          </span>
+            <i v-if="link.icon" :class="[link.icon, props.iconClass, props.collapsed ? 'mr-0' : 'mr-3']" class="text-lg" />
+            <span v-if="!props.collapsed" class="menu-label">
+              {{ link.label }}
+            </span>
         </router-link>
         <a
           v-else-if="link.href || link.click"
@@ -40,14 +40,14 @@
           :href="link.href"
           target="_blank"
           rel="noopener noreferrer"
-          class="rounded-md h-8 transition !text-zinc-400 flex items-center justify-between
-          group whitespace-nowrap flex-nowrap px-1.5 hover:bg-zinc-800 hover:!text-zinc-100 mb-2 cursor-pointer overflow-hidden"
+          class="menu-link h-10 transition !text-zinc-300 flex items-center justify-between
+          group whitespace-nowrap flex-nowrap px-3 hover:bg-zinc-800 mb-2 cursor-pointer overflow-hidden"
           :class="[props.linkClass, props.collapsed ? 'justify-center' : '']"
           @click="link.click && link.click()"
         >
           <div class="flex items-center" :class="{ 'justify-center w-full': props.collapsed }">
             <i v-if="link.icon" :class="[link.icon, props.iconClass, props.collapsed ? 'mr-0' : 'mr-3']" class="text-lg" />
-            <span v-if="!props.collapsed" class="">
+            <span v-if="!props.collapsed" class="menu-label">
               {{ link.label }}
             </span>
           </div>

@@ -47,14 +47,16 @@ export default {
 .chart {
   div {
     line-height: 112px !important;
-    height: auto !important;
+    height: 112px !important; /* FIXED: Match canvas height to prevent layout shifts */
   }
   .cube-widget-chart {
     padding: 0;
     min-height: 0;
+    height: 112px; /* FIXED: Ensure consistent height */
   }
   canvas {
-    height: 112px;
+    height: 112px !important; /* FIXED: Make canvas height more specific */
+    width: 100% !important; /* FIXED: Ensure canvas takes full width */
   }
 }
 </style>

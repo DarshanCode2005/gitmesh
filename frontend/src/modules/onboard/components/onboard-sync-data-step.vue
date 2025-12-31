@@ -55,37 +55,34 @@
     <app-dialog
       v-model="showGithubDialog"
       size="small"
-      title=":: SYSTEM_SYNCHRONIZATION"
+      title="GitHub Integration"
       custom-class="terminal-dialog"
     >
-      <template #content>
-        <div class="px-8 py-10 text-zinc-300 font-mono text-xs relative overflow-hidden">
-          <div class="absolute top-0 right-0 p-2 opacity-10">
-            <i class="ri-github-fill text-6xl"></i>
+    <template #title>
+        <div class="flex items-center gap-3">
+        <i class="ri-github-fill text-xl"></i>
+        <span>GitHub Integration</span>
+        </div>
+    </template>
+    <template #content>
+      <div class="p-8 max-w-xs mx-auto space-y-6">
+
+        <div class="space-y-3 text-xs">
+          <div class="flex items-center gap-3 text-emerald-500">
+            <i class="ri-checkbox-circle-fill"></i>
+            <span>Handshake established</span>
           </div>
-
-          <div class="flex flex-col items-center gap-6 text-center relative z-10">
-            <div class="relative">
-              <i class="ri-broadcast-line text-4xl text-orange-500 animate-pulse"></i>
-              <div class="absolute -bottom-1 -right-1 w-3 h-3 bg-zinc-950 flex items-center justify-center border border-zinc-800">
-                <div class="w-1.5 h-1.5 bg-emerald-500 animate-ping"></div>
-              </div>
-            </div>
-
-            <div class="space-y-3">
-              <p class="uppercase tracking-[0.2em] font-bold text-white">
-                Synchronizing GitHub_Protocol
-              </p>
-              <div class="h-[1px] w-12 bg-zinc-800 mx-auto"></div>
-              <p class="text-zinc-500 text-[10px] leading-relaxed uppercase">
-                Establishing handshake...<br />
-                Configuring repository access permissions...<br />
-                <span class="text-orange-500">Status: TRANSMITTING_DATA</span>
-              </p>
-            </div>
+          <div class="flex items-center gap-3 text-zinc-400">
+            <div class="w-3 h-3 border-2 border-zinc-300 border-t-zinc-600 rounded-full animate-spin"></div>
+            <span>Configuring access...</span>
+          </div>
+          <div class="flex items-center gap-3 text-zinc-300">
+            <i class="ri-checkbox-blank-circle-line"></i>
+            <span>Finalizing sync</span>
           </div>
         </div>
-      </template>
+      </div>
+    </template>
     </app-dialog>
   </div>
 </template>

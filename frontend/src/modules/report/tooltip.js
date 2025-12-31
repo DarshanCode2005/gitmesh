@@ -10,53 +10,16 @@ export const externalTooltipHandler = (
     tooltipEl = document.createElement('div');
     tooltipEl.id = 'chartjs-tooltip';
     tooltipEl.innerHTML = '<table></table>';
+    // Prevent the tooltip DOM from capturing pointer events (avoids hover flicker)
+    tooltipEl.style.pointerEvents = 'none';
     document.body.appendChild(tooltipEl);
   }
-
-  // Handle mouseenter event on tooltip
-  tooltipEl.onmouseenter = () => {
-    if (chart.canvas) {
-      const meta = chart.getDatasetMeta(0);
-      const canvas = chart.canvas.getBoundingClientRect();
-      const point = meta.data[
-        tooltip.dataPoints[0].dataIndex
-      ].getCenterPoint();
-      const evt = new MouseEvent('mousemove', {
-        clientX: canvas.x + point.x,
-        clientY: canvas.y + point.y,
-      });
-      const canvasNode = chart.canvas;
-
-      // Dispatch mousemove event to canvas
-      // This will allow for the tooltip render
-      // logic to still be on the library side
-      canvasNode?.dispatchEvent(evt);
-    }
-  };
-
-  // hide the tooltip after a delay
+  // hide the tooltip after a short delay
   const hideTooltipWithDelay = () => {
     setTimeout(() => {
       tooltipEl.style.opacity = 0;
       tooltipEl.style.display = 'none';
-    }, 100); // Adjust the delay time (in milliseconds) as needed
-  };
-
-  // Handle mouseleave event on tooltip
-  tooltipEl.onmouseleave = ({ clientX, clientY }) => {
-    if (chart.canvas) {
-      const evt = new MouseEvent('mouseout', {
-        clientX,
-        clientY,
-      });
-      const canvasNode = chart.canvas;
-
-      // Dispatch mouseposition in the mouseout event
-      // This will hide tooltip
-      canvasNode?.dispatchEvent(evt);
-    }
-
-    hideTooltipWithDelay();
+    }, 100);
   };
 
   // Hide if no tooltip
@@ -135,11 +98,15 @@ export const externalTooltipHandler = (
     );
 
     if (!footerBtn && tooltip.footer) {
-      footerBtn = document.createElement('el-button');
+      // create a native button so it's reliably clickable even when
+      // parent tooltip has pointer-events disabled
+      footerBtn = document.createElement('button');
       footerBtn.id = 'custom-tooltip-footer-btn';
       tooltip.footer.forEach((lines) => {
         footerBtn.className = 'btn btn--sm btn--full btn--secondary mt-4';
         footerBtn.innerText = lines;
+        // allow the footer button to receive pointer events
+        footerBtn.style.pointerEvents = 'auto';
         tooltipEl.appendChild(footerBtn);
       });
     }
@@ -148,9 +115,13 @@ export const externalTooltipHandler = (
       document.getElementById('custom-tooltip-footer-btn')?.remove();
     }
 
-    // Add clickFn to footerBtn
-    // This will allow each graph to handle the button click differently
-    footerBtn.onclick = clickFn;
+    // Add click handler to footerBtn (if present)
+    if (footerBtn) {
+      footerBtn.onclick = (e) => {
+        e.stopPropagation();
+        clickFn(e);
+      };
+    }
 
     const tableRoot = tooltipEl.querySelector('table');
     tableRoot.innerHTML = innerHtml;
@@ -165,18 +136,11 @@ export const externalTooltipHandler = (
   tooltipEl.style.borderRadius = '8px';
   tooltipEl.style.position = 'absolute';
   tooltipEl.style.boxShadow = '0px 4px 6px -4px rgba(0, 0, 0, 0.1), 0px 10px 15px -3px rgba(0, 0, 0, 0.1)';
-  tooltipEl.style.left = `${position.left
-    + window.pageXOffset
-    + tooltip.caretX
-    - tooltipEl.getBoundingClientRect().width / 2
-  }px`;
-  tooltipEl.style.top = `${position.top
-    + window.pageYOffset
-    + (tooltip.dataPoints?.[0]?.element?.y
-      || tooltip.caretY)
-    - tooltipEl.getBoundingClientRect().height
-    - 20
-  }px`;
+  // Position tooltip; add a small vertical offset to avoid placing it
+  // directly under the cursor which can trigger hover/strobe loops.
+  const extraVerticalOffset = 10;
+  tooltipEl.style.left = `${position.left + window.pageXOffset + tooltip.caretX - tooltipEl.getBoundingClientRect().width / 2}px`;
+  tooltipEl.style.top = `${position.top + window.pageYOffset + (tooltip.dataPoints?.[0]?.element?.y || tooltip.caretY) - tooltipEl.getBoundingClientRect().height - 20 - extraVerticalOffset}px`;
   tooltipEl.style.padding = '12px';
   tooltipEl.style.textAlign = 'left';
   tooltipEl.style.zIndex = '20';

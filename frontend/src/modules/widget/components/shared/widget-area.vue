@@ -12,9 +12,10 @@
 
 <script setup>
 import {
-  computed, onMounted, ref,
+  computed, onMounted, ref, shallowRef, onBeforeUnmount,
 } from 'vue';
 import cloneDeep from 'lodash/cloneDeep';
+import isEqual from 'lodash/isEqual';
 import { externalTooltipHandler } from '@/modules/report/tooltip';
 import AppWidgetEmpty from '@/modules/widget/components/shared/widget-empty.vue';
 
@@ -55,6 +56,10 @@ const props = defineProps({
 const highestValue = ref(0);
 const lowestValue = ref(0);
 const dataset = ref({});
+const cachedOptions = shallowRef(null);
+const cachedData = shallowRef(null);
+const lastDataHash = ref(null);
+
 const loading = computed(
   () => !props.resultSet?.loadResponses,
 );
@@ -160,13 +165,67 @@ const series = (resultSet) => {
 };
 
 const data = computed(() => {
+  console.log(`[WIDGET-AREA-CRITICAL] data computed - loading: ${loading.value}, resultSet exists: ${!!props.resultSet}`);
+  
   if (loading.value) {
     return [];
   }
-  return series(props.resultSet);
+  
+  // IMPROVED: Create a hash of the actual data content to detect real changes
+  let currentDataHash = null;
+  try {
+    if (props.resultSet && props.resultSet.loadResponses) {
+      // Create a simple hash based on the data that actually matters
+      const pivot = props.resultSet.chartPivot();
+      currentDataHash = JSON.stringify({
+        loadResponsesCount: props.resultSet.loadResponses.length,
+        pivotLength: pivot.length,
+        firstItem: pivot[0] || null,
+        lastItem: pivot[pivot.length - 1] || null,
+        datasets: props.datasets.map(d => ({ name: d.name, measure: d.measure })),
+      });
+    }
+  } catch (e) {
+    console.warn('[WIDGET-AREA-CRITICAL] Error creating data hash:', e);
+    currentDataHash = Date.now().toString(); // Force recalculation if error
+  }
+  
+  if (cachedData.value && lastDataHash.value === currentDataHash) {
+    console.log(`[WIDGET-AREA-CRITICAL] data computed - using cached result (hash match)`);
+    return cachedData.value;
+  }
+  
+  console.log(`[WIDGET-AREA-CRITICAL] data computed - calculating new result (hash changed)`);
+  console.log(`[WIDGET-AREA-CRITICAL] Old hash: ${lastDataHash.value}`);
+  console.log(`[WIDGET-AREA-CRITICAL] New hash: ${currentDataHash}`);
+  
+  const result = series(props.resultSet);
+  
+  // Cache the result with the hash
+  cachedData.value = result;
+  lastDataHash.value = currentDataHash;
+  
+  return result;
 });
 
 const customChartOptions = computed(() => {
+  console.log(`[WIDGET-AREA-CRITICAL] customChartOptions computed - highestValue: ${highestValue.value}, lowestValue: ${lowestValue.value}`);
+  
+  // IMPROVED: Create a simple hash of the inputs that matter
+  const currentInputsHash = JSON.stringify({
+    chartOptionsKeys: Object.keys(props.chartOptions || {}),
+    highestValue: highestValue.value,
+    lowestValue: lowestValue.value,
+    isGridMinMax: props.isGridMinMax,
+    showMinAsValue: props.showMinAsValue,
+  });
+  
+  if (cachedOptions.value && cachedOptions.value.inputsHash === currentInputsHash) {
+    console.log(`[WIDGET-AREA-CRITICAL] customChartOptions computed - using cached options`);
+    return cachedOptions.value.result;
+  }
+  
+  console.log(`[WIDGET-AREA-CRITICAL] customChartOptions computed - calculating new options`);
   const options = cloneDeep(props.chartOptions);
 
   // Customize external tooltip
@@ -201,7 +260,13 @@ const customChartOptions = computed(() => {
       };
     }
   }
-
+  
+  // Cache the result
+  cachedOptions.value = {
+    inputsHash: currentInputsHash,
+    result: options,
+  };
+  
   return options;
 });
 
@@ -209,13 +274,19 @@ const paintDataSet = () => {
   const canvas = document.querySelector(
     '.cube-widget-chart canvas',
   );
+  
   if (canvas && customChartOptions.value?.computeDataset) {
     dataset.value = customChartOptions.value.computeDataset(canvas);
   }
 };
 
 onMounted(async () => {
+  console.log(`[WIDGET-AREA-CRITICAL] Component mounted - datasets: ${props.datasets.map(d => d.name).join(', ')}`);
   paintDataSet();
+});
+
+onBeforeUnmount(() => {
+  console.log(`[WIDGET-AREA-CRITICAL] Component unmounting - datasets: ${props.datasets.map(d => d.name).join(', ')}`);
 });
 </script>
 
