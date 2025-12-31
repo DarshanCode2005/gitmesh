@@ -1,10 +1,21 @@
 import moment from 'moment';
+import { safeMoment } from '@/utils/reports';
 
 export const dashboardChartOptions = {
   legend: false,
   yTicks: false,
   yLines: false,
-  xTicksCallback: (label) => moment(label).format('MMM DD'),
+  xTicksCallback: (label) => {
+    try {
+      const d = safeMoment(label);
+      if (d && d.isValid && d.isValid()) return d.format('MMM DD');
+      return String(label ?? '');
+    } catch (e) {
+      return String(label ?? '');
+    }
+  },
+  // fixed display height used by dashboard widgets (prevents responsive resize loops)
+  height: '112px',
   gradient: {
     x0: 0,
     y0: 0,

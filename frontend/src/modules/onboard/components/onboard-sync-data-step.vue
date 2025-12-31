@@ -55,15 +55,17 @@
     <app-dialog
       v-model="showGithubDialog"
       size="small"
-      title=":: SYSTEM_SYNCHRONIZATION"
+      title="GitHub Integration"
       custom-class="terminal-dialog"
     >
+    <template #title>
+        <div class="flex items-center gap-3">
+        <i class="ri-github-fill text-xl"></i>
+        <span>GitHub Integration</span>
+        </div>
+    </template>
     <template #content>
       <div class="p-8 max-w-xs mx-auto space-y-6">
-        <div class="flex items-center gap-3">
-          <i class="ri-github-fill text-2xl"></i>
-          <span class="font-medium">GitHub Integration</span>
-        </div>
 
         <div class="space-y-3 text-xs">
           <div class="flex items-center gap-3 text-emerald-500">

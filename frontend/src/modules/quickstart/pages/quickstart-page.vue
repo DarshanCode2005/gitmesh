@@ -2,11 +2,8 @@
   <app-page-wrapper>
     <div class="pb-6">
       <h4 class="mb-1 mt-8">
-        Welcome to GitMesh 🐾
+        Welcome to GitMesh !!<br></br>ദ്ദി (˵ •̀ ᴗ - ˵ ) ✧
       </h4>
-      <p class="text-xs leading-5 text-gray-300">
-        The place where open-source teams coordinate, review, and ship together.
-      </p>
     </div>
     <div class="flex flex-wrap -mx-2.5">
       <div class="w-full lg:w-2/3 px-2.5">

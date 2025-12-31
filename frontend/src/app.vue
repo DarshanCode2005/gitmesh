@@ -64,7 +64,7 @@ export default {
 
   beforeCreate() {
     this.$router.beforeEach((to, from, next) => {
-      document.title = `gitmesh.dev${to.meta.title ? ` | ${to.meta.title}` : ''}`;
+      document.title = `GitMesh${to.meta.title ? ` | ${to.meta.title}` : ''}`;
       next();
     });
   },
@@ -72,7 +72,7 @@ export default {
   async created() {
     await this.doInit();
 
-    FeatureFlag.init(this.currentTenant);
+    await FeatureFlag.init(this.currentTenant);
 
     window.addEventListener('resize', this.handleResize);
     this.handleResize();

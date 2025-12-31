@@ -8,66 +8,7 @@
         <app-loading height="7.5rem" class="mb-1" />
         <app-loading height="7.5rem" />
       </div>
-      <div v-else class="mb-4">
-      <div class="quickstart-summary panel p-5 mb-4">
-          <div class="flex items-start gap-4">
-            <div class="summary-left">
-              <h3 class="mb-1 text-lg font-semibold">QUICKSTART GUIDE</h3>
-              <p class="text-sm text-zinc-400">Get set up in minutes — follow the key steps below.</p>
-            </div>
-            <div class="ml-auto hidden sm:block">
-              <div class="completion-pill text-xs font-medium">{{ Math.round(completionPercentage) }}% complete</div>
-            </div>
-          </div>
-
-          <ul class="mt-4 grid gap-2 sm:grid-cols-2">
-            <li class="flex items-start gap-3">
-              <svg class="icon-check" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              <div>
-                <div class="text-sm font-medium">Connect your first integration</div>
-                <div class="text-xs text-zinc-400">Authorize a provider to start syncing data.</div>
-              </div>
-            </li>
-            <li class="flex items-start gap-3">
-              <svg class="icon-check" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              <div>
-                <div class="text-sm font-medium">Invite your team</div>
-                <div class="text-xs text-zinc-400">Add teammates with full or read-only access.</div>
-              </div>
-            </li>
-            <li class="flex items-start gap-3">
-              <svg class="icon-check" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              <div>
-                <div class="text-sm font-medium">Explore contacts</div>
-                <div class="text-xs text-zinc-400">Browse and search your people database.</div>
-              </div>
-            </li>
-            <li class="flex items-start gap-3">
-              <svg class="icon-check" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              <div>
-                <div class="text-sm font-medium">Explore organizations</div>
-                <div class="text-xs text-zinc-400">See company profiles and activity.</div>
-              </div>
-            </li>
-            <li class="flex items-start gap-3">
-              <svg class="icon-check" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              <div>
-                <div class="text-sm font-medium">Look into reports</div>
-                <div class="text-xs text-zinc-400">Run analytics to understand your activity.</div>
-              </div>
-            </li>
-            <li class="flex items-start gap-3">
-              <svg class="icon-check" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              <div>
-                <div class="text-sm font-medium">Create automations</div>
-                <div class="text-xs text-zinc-400">Automate routine workflows and notifications.</div>
-              </div>
-            </li>
-          </ul>
-        </div>
-      </div>
       <el-collapse
-        v-else
         v-model="activeView"
         accordion
         class="guides"

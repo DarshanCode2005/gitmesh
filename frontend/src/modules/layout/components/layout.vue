@@ -71,6 +71,8 @@ export default {
   components: {
     AppMenu,
     TabBar,
+    // local banner component
+    Banner: () => import('@/shared/banner/banner.vue'),
   },
 
   setup() {
@@ -140,7 +142,24 @@ export default {
       currentUser: 'auth/currentUser',
       currentTenant: 'auth/currentTenant',
       integrationsInProgress: 'integration/inProgress',
+      integrationsNeedReconnect: 'integration/needsReconnect',
+      showIntegrationsNeedReconnectAlert: 'tenant/showIntegrationsNeedReconnectAlert',
+      showOrganizationsAlertBanner: 'tenant/showOrganizationsAlertBanner',
     }),
+
+    integrationsInProgressToString() {
+      const arr = (this.integrationsInProgress || []).map((i) => i.name);
+      if (arr.length === 1) return arr[0];
+      if (arr.length === 2) return `${arr[0]} and ${arr[1]}`;
+      return `${arr.slice(0, arr.length - 1).join(', ')}, and ${arr.slice(-1)}`;
+    },
+
+    integrationsNeedReconnectToString() {
+      const arr = (this.integrationsNeedReconnect || []).map((i) => i.name);
+      if (arr.length === 1) return arr[0];
+      if (arr.length === 2) return `${arr[0]} and ${arr[1]}`;
+      return `${arr.slice(0, arr.length - 1).join(', ')}, and ${arr.slice(-1)}`;
+    },
 
     // No cached views: keep-alive removed to prevent background tab pages
   },

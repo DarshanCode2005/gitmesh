@@ -235,14 +235,16 @@ const onExport = async ({ count }) => {
   :deep(.chart) {
     div {
       line-height: 100px !important;
-      height: auto !important;
+      height: 100px !important; /* FIXED: Match canvas height to prevent layout shifts */
     }
     .cube-widget-chart {
       padding: 0;
       min-height: 0;
+      height: 100px; /* FIXED: Ensure consistent height */
     }
     canvas {
-      height: 100px;
+      height: 100px !important; /* FIXED: Make canvas height more specific */
+      width: 100% !important; /* FIXED: Ensure canvas takes full width */
     }
   }
 }

@@ -1,5 +1,4 @@
 import Layout from '@/modules/layout/components/layout.vue';
-import Permissions from '@/security/permissions';
 
 const QuickstartPage = () => import('@/modules/quickstart/pages/quickstart-page.vue');
 

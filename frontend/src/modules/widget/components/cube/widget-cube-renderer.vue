@@ -11,10 +11,7 @@
         :show-subtitle="showSubtitle"
         :widget="mapWidget(widget, resultSet)"
         :editable="editable"
-        :chart-options="{
-          ...mapOptions(widget, resultSet),
-          ...chartOptions,
-        }"
+        :chart-options="mergedChartOptions"
         :dashboard="dashboard"
         @edit="$emit('edit', widget)"
         @duplicate="$emit('duplicate', widget)"
@@ -70,6 +67,20 @@ export default {
     };
   },
   computed: {
+    mergedChartOptions() {
+      return (widget, resultSet) => {
+        if (typeof mapOptions === 'function' && widget && resultSet) {
+          return {
+            ...mapOptions(widget, resultSet),
+            ...this.chartOptions,
+          };
+        }
+
+        return {
+          ...this.chartOptions,
+        };
+      };
+    },
     ...mapGetters({
       cubejsToken: 'widget/cubejsToken',
       cubejsApi: 'widget/cubejsApi',

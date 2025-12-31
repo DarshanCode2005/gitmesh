@@ -18,7 +18,7 @@
               class="leading-8 font-semibold transition-all duration-100 text-white font-mono mt-8"
               :class="scrolled ? 'text-base' : 'text-xl'"
             >
-              {{ currentTenant?.name }} team overview
+              {{ currentTenant?.name }} Workspace Dashboard
             </h4>
             <div class="relative mt-8 group flex items-center">
               <div
