@@ -62,7 +62,7 @@ import AppMenu from '@/modules/layout/components/menu.vue';
 import TabBar from '@/modules/layout/components/tab-bar.vue';
 import { onMounted, onUnmounted, watch } from 'vue';
 import { useTopNavStore } from '@/modules/layout/store/topNav';
-import { signalsMainMenu, chatMenu, devtelMenu } from '@/modules/layout/config/menu';
+import { signalsMainMenu, chatMenu, devspaceMenu } from '@/modules/layout/config/menu';
 import { useRoute, useRouter } from 'vue-router';
 
 export default {
@@ -105,7 +105,7 @@ export default {
       };
 
       if (matches(chatMenu)) return 'chat';
-      if (matches(devtelMenu)) return 'devtel';
+      if (matches(devspaceMenu)) return 'devspace';
       return 'signals';
     };
 
@@ -119,7 +119,7 @@ export default {
     watch(
       () => route.fullPath,
       (p) => {
-        const selected = topNav.selected as 'signals' | 'chat' | 'devtel';
+        const selected = topNav.selected as 'signals' | 'chat' | 'devspace';
         if (selected) topNav.setLastVisited(selected, p || '/');
       },
       { immediate: true },

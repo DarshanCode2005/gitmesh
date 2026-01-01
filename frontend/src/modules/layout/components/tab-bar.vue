@@ -24,11 +24,11 @@
 
           <el-button
             class="top-tab-btn"
-            :class="{ active: selectedTop === 'devtel' }"
-            @click="setTop('devtel')"
+            :class="{ active: selectedTop === 'devspace' }"
+            @click="setTop('devspace')"
             size="small"
           >
-            DevTel
+            DevSpace
           </el-button>
         </div>
       </div>
@@ -201,7 +201,7 @@ import { watch, computed, onMounted, nextTick, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useTopNavStore } from '@/modules/layout/store/topNav';
 import { useTabsStore } from '@/modules/layout/store/tabs';
-import { signalsMainMenu, chatMenu, devtelMenu } from '@/modules/layout/config/menu';
+import { signalsMainMenu, chatMenu, devspaceMenu } from '@/modules/layout/config/menu';
 import { useStore } from 'vuex';
 import pageStatus from '@/config/page-status.json';
 
@@ -274,7 +274,7 @@ const integrationsNeedReconnectToString = computed(() => {
 
 const selectedTop = computed(() => topNav.selected);
 
-const setTop = (value: 'signals' | 'chat' | 'devtel') => {
+const setTop = (value: 'signals' | 'chat' | 'devspace') => {
   topNav.set(value);
 };
 
@@ -290,7 +290,7 @@ watch(() => topNav.selected, (newVal) => {
   // Fallback to first menu link
   let menu = signalsMainMenu;
   if (newVal === 'chat') menu = chatMenu;
-  if (newVal === 'devtel') menu = devtelMenu;
+  if (newVal === 'devspace') menu = devspaceMenu;
   const first = menu.find((m: any) => m && (m.routeName || m.path));
   if (first) {
     if (first.routeName) router.push({ name: first.routeName }).catch(() => {});

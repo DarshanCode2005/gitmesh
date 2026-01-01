@@ -18,6 +18,7 @@ import quickstart from '@/modules/quickstart/quickstart-module';
 import chat from '@/modules/chat/chat-module';
 import user from '@/modules/user/user-module';
 import landing from '@/modules/landing/landing-module';
+import devtel from '@/modules/devspace/devtel-module';
 
 // Dynamically import premium modules to allow removing the premium directory
 const premiumModulesGlob = import.meta.glob('../premium/*/*-module.js', { eager: true });
@@ -52,6 +53,7 @@ const modules: Record<string, any> = {
   quickstart,
   chat,
   user,
+  devtel,
   ...premiumModules,
 };
 

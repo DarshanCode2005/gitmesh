@@ -34,7 +34,13 @@ import setupSwaggerUI from './apiDocumentation'
 import { createRateLimiter } from './apiRateLimiter'
 import authSocial from './auth/authSocial'
 import WebSockets from './websockets'
+import DevtelWebSocketNamespace from './websockets/devtel'
 import { databaseInit } from '@/database/databaseConnection'
+
+// Declare global for DevTel WebSocket namespace
+declare global {
+  var devtelWebSocket: DevtelWebSocketNamespace
+}
 
 const serviceLogger = getServiceLogger()
 getServiceTracer()
@@ -49,7 +55,10 @@ setImmediate(async () => {
   const opensearch = getOpensearchClient(OPENSEARCH_CONFIG)
 
   const redisPubSubPair = await getRedisPubSubPair(REDIS_CONFIG)
-  const userNamespace = await WebSockets.initialize(server)
+  const { userNamespace, devtel: devtelNamespace } = await WebSockets.initialize(server)
+
+  // Store devtel namespace globally for service access
+  global.devtelWebSocket = devtelNamespace
 
   const pubSubReceiver = new RedisPubSubReceiver(
     'api-pubsub',
@@ -156,7 +165,7 @@ setImmediate(async () => {
         if (url.startsWith('/webhooks/stripe') || url.startsWith('/webhooks/sendgrid')) {
           // Stripe and sendgrid webhooks needs the body raw
           // for verifying the webhook with signing secret
-          ;(<any>req).rawBody = buf.toString()
+          ; (<any>req).rawBody = buf.toString()
         }
       },
     }),
@@ -202,6 +211,7 @@ setImmediate(async () => {
     './eventTracking',
     './customViews',
     './premium/enrichment',
+    './devtel',
   ]
 
   for (const mod of apiModules) {

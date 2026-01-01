@@ -56,7 +56,7 @@ import {
   signalsMainMenu,
   signalsBottomMenu,
   chatMenu,
-  devtelMenu,
+  devspaceMenu,
 } from '@/modules/layout/config/menu';
 import { useTopNavStore } from '@/modules/layout/store/topNav';
 import CrMenuSupport from '@/modules/layout/components/menu/menu-support.vue';
@@ -86,13 +86,13 @@ const selectedTop = computed(() => topNav.selected);
 
 const currentMainMenu = computed(() => {
   if (selectedTop.value === 'chat') return chatMenu;
-  if (selectedTop.value === 'devtel') return devtelMenu;
+  if (selectedTop.value === 'devspace') return devspaceMenu;
   return signalsMainMenu;
 });
 
 const currentBottomMenu = computed(() => {
   if (selectedTop.value === 'chat') return [];
-  if (selectedTop.value === 'devtel') return [];
+  if (selectedTop.value === 'devspace') return [];
   return signalsBottomMenu;
 });
 function toggleMenu() {

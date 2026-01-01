@@ -80,13 +80,13 @@ function models(queryTimeoutMilliseconds: number) {
       },
       logging: DB_CONFIG.logging
         ? (dbLog) =>
-            log.info(
-              highlight(dbLog, {
-                language: 'sql',
-                ignoreIllegals: true,
-              }),
-              'DB LOG',
-            )
+          log.info(
+            highlight(dbLog, {
+              language: 'sql',
+              ignoreIllegals: true,
+            }),
+            'DB LOG',
+          )
         : false,
     },
   )
@@ -127,6 +127,12 @@ function models(queryTimeoutMilliseconds: number) {
     const model = notInitmodel(sequelize, DataTypes)
     database[model.name] = model
   }
+
+  // Load DevTel models
+  const devtelModels = require('./devtel').default(sequelize)
+  Object.keys(devtelModels).forEach((modelName) => {
+    database[modelName] = devtelModels[modelName]
+  })
 
   Object.keys(database).forEach((modelName) => {
     if (database[modelName].associate) {

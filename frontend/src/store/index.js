@@ -17,7 +17,22 @@ const buildStores = () => {
   Object.keys(modules)
     .filter((key) => Boolean(modules[key].store))
     .forEach((key) => {
-      output[key] = modules[key].store;
+      const moduleStore = modules[key].store;
+      
+      // Check if the module exports multiple stores (like devspace module)
+      // If all properties are Vuex modules (have namespaced, state, etc.), register them flat
+      const isMultiStore = typeof moduleStore === 'object' 
+        && !moduleStore.namespaced 
+        && !moduleStore.state 
+        && Object.values(moduleStore).every(s => s && typeof s === 'object' && s.namespaced);
+      
+      if (isMultiStore) {
+        // Spread multiple stores at root level (e.g., devspace, issues, cycles)
+        Object.assign(output, moduleStore);
+      } else {
+        // Standard single-store module
+        output[key] = moduleStore;
+      }
     });
 
   return output;
