@@ -15,7 +15,9 @@ import usersPermissions from './links/users-permissions';
 import apiKeys from './links/api-keys';
 import plansBilling from './links/plans-billing';
 
-// Signals (default) main menu: everything except DevTel (reports)
+import * as devspaceLinks from './links/devspace-links';
+
+// Signals (default) main menu: everything except DevTel
 export const signalsMainMenu: MenuLink[] = [
   home,
   contacts,
@@ -34,9 +36,17 @@ export const chatMenu: MenuLink[] = [
   chat,
 ];
 
-// DevTel-only menu (reports)
-export const devtelMenu: MenuLink[] = [
-  reports,
+// DevSpace menu (project management + devtel reports)
+export const devspaceMenu: MenuLink[] = [
+  devspaceLinks.overview,
+  devspaceLinks.board,
+  devspaceLinks.backlog,
+  devspaceLinks.cycles,
+  devspaceLinks.capacity,
+  devspaceLinks.specs,
+  devspaceLinks.team,
+  devspaceLinks.projectSettings,
+  devspaceLinks.devtel,
 ];
 
 // Backwards-compatible exports (default to Signals menus)

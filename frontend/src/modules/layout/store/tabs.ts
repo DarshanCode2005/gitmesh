@@ -22,7 +22,7 @@ export const useTabsStore = defineStore('tabs', {
     groups: {
       signals: { tabs: [] as Tab[], activeTabPath: '' } as Group,
       chat: { tabs: [] as Tab[], activeTabPath: '' } as Group,
-      devtel: { tabs: [] as Tab[], activeTabPath: '' } as Group,
+      devspace: { tabs: [] as Tab[], activeTabPath: '' } as Group,
     },
     inactivityTimer: null as any,
   }),
@@ -117,11 +117,11 @@ export const useTabsStore = defineStore('tabs', {
     },
 
     // Utilities for other components
-    getTabsFor(top: 'signals' | 'chat' | 'devtel') {
+    getTabsFor(top: 'signals' | 'chat' | 'devspace') {
       // @ts-ignore
       return this.groups[top].tabs;
     },
-    getActiveFor(top: 'signals' | 'chat' | 'devtel') {
+    getActiveFor(top: 'signals' | 'chat' | 'devspace') {
       // @ts-ignore
       return this.groups[top].activeTabPath;
     },

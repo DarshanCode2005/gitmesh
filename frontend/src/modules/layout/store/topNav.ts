@@ -4,11 +4,11 @@ const STORAGE_KEY = 'topNav:v1';
 
 export const useTopNavStore = defineStore('topNav', {
   state: () => ({
-    selected: 'signals' as 'signals' | 'chat' | 'devtel',
+    selected: 'signals' as 'signals' | 'chat' | 'devspace',
     lastVisited: {
       signals: '' as string,
       chat: '' as string,
-      devtel: '' as string,
+      devspace: '' as string,
     } as Record<string, string>,
   }),
   actions: {
@@ -33,12 +33,12 @@ export const useTopNavStore = defineStore('topNav', {
       }
     },
 
-    set(selected: 'signals' | 'chat' | 'devtel') {
+    set(selected: 'signals' | 'chat' | 'devspace') {
       this.selected = selected;
       this.persist();
     },
 
-    setLastVisited(top: 'signals' | 'chat' | 'devtel', path: string) {
+    setLastVisited(top: 'signals' | 'chat' | 'devspace', path: string) {
       this.lastVisited[top] = path;
       this.persist();
     },
