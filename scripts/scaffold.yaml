@@ -160,6 +160,25 @@ services:
     networks:
       - gitmesh-bridge
 
+  # Ollama - Local open-source LLM server
+  ollama:
+    image: ollama/ollama:latest
+    restart: always
+    ports:
+      - '11434:11434'
+    volumes:
+      - ollama-dev:/root/.ollama
+    networks:
+      - gitmesh-bridge
+    # Uncomment below for GPU support (NVIDIA)
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all
+    #           capabilities: [gpu]
+
 networks:
   gitmesh-bridge:
     external: true
@@ -169,3 +188,4 @@ volumes:
   opensearch-dev:
   s3-dev:
   redis-dev:
+  ollama-dev:
